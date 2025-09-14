@@ -135,36 +135,54 @@ export function checkGemDrop(monster) {
     return Math.random() < dropRate;
 }
 
-export function simulateCombat(player, playerStats, monster) {
+export function simulateCombat(player, playerStats, monster, equipmentStats = null) {
     const combatLog = [];
     let playerHp = player.health;
     let monsterHp = monster.health;
     
+    // Use equipment stats if provided, otherwise use defaults for backwards compatibility
+    const stats = equipmentStats || {
+        total_protection: 0,
+        speed_modifier: 1.0,
+        weapon_damage_min: 0,
+        weapon_damage_max: 0
+    };
+    
     while (playerHp > 0 && monsterHp > 0) {
-        // Player attacks first
-        const playerDamage = calculatePlayerDamage(playerStats, 0);
-        const damageDealt = applyDefense(playerDamage, monster.defense);
+        // Player attacks first - calculate damage with equipment
+        const weaponDamage = stats.weapon_damage_min + 
+            Math.floor(Math.random() * (stats.weapon_damage_max - stats.weapon_damage_min + 1));
+        const baseDamage = playerStats.strength + weaponDamage;
+        const effectiveDamage = Math.floor(baseDamage * stats.speed_modifier);
+        const damageDealt = applyDefense(effectiveDamage, monster.defense);
         monsterHp = Math.max(0, monsterHp - damageDealt);
         
         combatLog.push({
             attacker: 'player',
             damage: damageDealt,
-            weapon: 'Rusty Dagger', // TODO: Get actual weapon
+            weaponDamage: weaponDamage,
+            baseDamage: baseDamage,
+            effectiveDamage: effectiveDamage,
+            weapon: weaponDamage > 0 ? 'equipped weapon' : 'fists',
             target: monster.name,
             targetHpRemaining: monsterHp
         });
         
         if (monsterHp <= 0) break;
         
-        // Monster counterattacks
-        const monsterDamage = calculateMonsterDamage(monster);
-        const damageReceived = applyDefense(monsterDamage, playerStats.defense);
+        // Monster counterattacks - apply armor protection
+        const rawMonsterDamage = calculateMonsterDamage(monster);
+        const protectedDamage = Math.max(1, rawMonsterDamage - stats.total_protection);
+        const damageReceived = applyDefense(protectedDamage, playerStats.defense);
         playerHp = Math.max(0, playerHp - damageReceived);
         
         combatLog.push({
             attacker: 'monster',
             damage: damageReceived,
-            weapon: `it's Little dagger`, // TODO: Monster weapon names
+            rawDamage: rawMonsterDamage,
+            protectedDamage: protectedDamage,
+            protection: stats.total_protection,
+            weapon: `its claws`,
             target: 'you',
             targetHpRemaining: playerHp
         });

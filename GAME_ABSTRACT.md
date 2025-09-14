@@ -8,10 +8,10 @@ MarcoLand was a browser-based, text-driven MMORPG active from 2006-2008 at tiips
 
 ### 1. Character System
 
-#### Primary Statistics
+#### Primary Statistics (3 Trainable Stats)
 - **Strength**: Directly adds to damage output (1:1 ratio). Required for equipping weapons and armor
-- **Speed (Agility)**: Reduces encumbrance penalty, determines attack order in PvP, affects hit frequency
-- **Intelligence**: Provides damage multiplier in PvP, affects critical hits, required for spells
+- **Speed**: Reduces encumbrance penalty, determines attack order in PvP, affects hit frequency
+- **Intelligence**: Provides damage multiplier in PvP (0.75x to 1.50x), affects critical hits, required for spells
 
 #### Derived Statistics
 - **Level**: Determines HP, Mana, and stat points gained
@@ -21,14 +21,14 @@ MarcoLand was a browser-based, text-driven MMORPG active from 2006-2008 at tiips
 
 #### Character Progression
 - **Beach Training**: Fight progressively harder monsters for XP and gold
-- **Temple Praying**: Spend mana to gain random stat points (efficiency decreases at higher total stats)
+- **Temple Praying**: Spend mana to gain random stat points among Strength/Speed/Intelligence (efficiency decreases at 1100/1300/1500+ total stats)
 - **PvP Combat**: Gain experience from defeating other players
 - **Leveling**: Automatically increases HP/Mana pools and grants stat points
 
 ### 2. Combat System
 
 #### PvE (Player vs Environment)
-Players fight 30+ monster types ranging from Goblins (Level 1) to Nazgul (Level 201):
+Players fight 30 monster types ranging from Goblins (Level 1, 10 HP) to Nazgul (Level 201, 60,000 HP):
 - **Damage Formula**: `(Strength + Weapon Damage) × Speed Modifier - Monster Protection`
 - **Speed Modifier**: `0.5 + 0.5 × (Speed/Encumbrance)` (capped at 1.0)
 - **Monster Progression**: Higher level monsters provide better XP/gold per mana spent
@@ -42,14 +42,15 @@ Players fight 30+ monster types ranging from Goblins (Level 1) to Nazgul (Level 
 
 ### 3. Equipment System
 
-#### Weapons (50+ types)
+#### Weapons (47 types)
 - **Progression**: Rusty Dagger (1-5 damage) to Apocalyptica (900-1000 damage)
 - **Requirements**: Each weapon requires minimum Strength to equip
 - **Cost Scaling**: Exponential pricing from 100 to 10,000,000 gold
 
-#### Armor
-- **Protection Value**: Reduces incoming damage
-- **Encumbrance**: Total encumbrance cannot exceed Strength stat
+#### Armor (5 body parts, 11 tiers each)
+- **Body Parts**: Feet, Hands, Head, Lower Body, Upper Body
+- **Protection Value**: Reduces incoming damage (1-250 protection range)
+- **Encumbrance**: Total encumbrance cannot exceed Strength stat (2-340 encumbrance range)
 - **Strategic Trade-offs**: Better protection vs. speed penalties
 
 #### Forging System
@@ -62,7 +63,7 @@ Players fight 30+ monster types ranging from Goblins (Level 1) to Nazgul (Level 
 - **Gold Coins (GC)**: Primary currency from monster kills and trading
 - **Metals**: Used for forging, investigations, and creature summoning
 - **Gems**: Premium currency for instant healing and special purchases
-- **Quarz**: Rare currency for high-level creature summoning
+- **Quarzes**: Rare currency for high-level creature summoning
 
 #### Market System
 - **Player Trading**: Asynchronous marketplace for items
@@ -139,7 +140,7 @@ Two types of large-scale PvP events:
 ### 8. Mana System
 
 #### Resource Mechanics
-- **Daily Regeneration**: Full mana refill every 24 hours at server reset
+- **Regeneration**: Full mana refill every 6 hours (configurable in revival)
 - **Pool Size**: `(Level × 3) + 50` mana (capped at level 175)
 - **Non-transferable**: Cannot be traded between players
 - **Premium Integration**: Used as incentive for voting, engagement activities, and premium purchases
@@ -169,7 +170,7 @@ Two types of large-scale PvP events:
 ### 10. Progression Gates
 
 #### Soft Caps
-- **Praying Efficiency**: Decreases at 1100, 1300, 1500+ total stats
+- **Praying Efficiency**: 3.5 avg per 50 mana (up to 1100), 2.5 (1100-1300), 1.5 (1300-1500), 1.1 (over 1500) total stats
 - **Encumbrance System**: Forces Strength investment for equipment
 - **Daily Mana Limit**: Natural progression throttle
 

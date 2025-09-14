@@ -7,7 +7,9 @@
   "scripts": {
     "dev": "node server/index.js",
     "scrape": "node scraper/wayback-scraper.js",
-    "db:migrate": "node database/migrate.js"
+    "db:migrate": "node database/migrate.js",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.39.0",
@@ -20,6 +22,7 @@
     "axios": "^1.6.2",
     "cheerio": "^1.0.0-rc.12",
     "fs-extra": "^11.2.0",
-    "puppeteer": "^21.6.0"
+    "puppeteer": "^21.6.0",
+    "vitest": "^3.2.4"
   }
 }

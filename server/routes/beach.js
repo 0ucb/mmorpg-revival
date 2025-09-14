@@ -8,6 +8,11 @@ import {
     getMaxHp,
     getMaxMana
 } from '../config/game.js';
+import { 
+    calculateEffectiveDamage,
+    calculateArmorReduction,
+    rollWeaponDamage
+} from '../config/equipment.js';
 
 const router = express.Router();
 
@@ -102,8 +107,23 @@ router.post('/fight', requireAuth, async (req, res) => {
             return res.status(500).json({ error: 'Failed to load player stats' });
         }
 
-        // Simulate combat
-        const combatResult = simulateCombat(req.player, playerStats, monster);
+        // Get player's cached combat stats from equipment
+        const { data: combatStats, error: combatStatsError } = await supabaseAdmin
+            .from('player_combat_stats')
+            .select('*')
+            .eq('player_id', playerId)
+            .single();
+
+        // Use default values if no equipment stats found (backwards compatibility)
+        const equipmentStats = combatStats || {
+            total_protection: 0,
+            speed_modifier: 1.0,
+            weapon_damage_min: 0,
+            weapon_damage_max: 0
+        };
+
+        // Simulate combat with equipment stats
+        const combatResult = simulateCombat(req.player, playerStats, monster, equipmentStats);
         const newPlayerHp = combatResult.playerHpAfter;
         const newMana = req.player.mana - gameConfig.combat.manaPerFight;
 
@@ -153,12 +173,21 @@ router.post('/fight', requireAuth, async (req, res) => {
             return res.status(500).json({ error: 'Failed to update player data' });
         }
 
-        // Format combat log for display
+        // Format combat log for display with equipment effects
         const formattedLog = combatResult.combatLog.map(entry => {
             if (entry.attacker === 'player') {
-                return `You hit the ${entry.target} with your ${entry.weapon} and caused ${entry.damage} damage. (${entry.targetHpRemaining} left)`;
+                if (entry.weaponDamage > 0) {
+                    return `You hit the ${entry.target} with your ${entry.weapon} and caused ${entry.damage} damage (${entry.weaponDamage} from weapon). (${entry.targetHpRemaining} left)`;
+                } else {
+                    return `You hit the ${entry.target} with your ${entry.weapon} and caused ${entry.damage} damage. (${entry.targetHpRemaining} left)`;
+                }
             } else {
-                return `The ${monster.name} hit you with ${entry.weapon} and caused ${entry.damage} damage. (${entry.targetHpRemaining} left)`;
+                if (entry.protection > 0) {
+                    const blocked = entry.rawDamage - entry.protectedDamage;
+                    return `The ${monster.name} hit you with ${entry.weapon} and caused ${entry.damage} damage (${blocked} blocked by armor). (${entry.targetHpRemaining} left)`;
+                } else {
+                    return `The ${monster.name} hit you with ${entry.weapon} and caused ${entry.damage} damage. (${entry.targetHpRemaining} left)`;
+                }
             }
         });
 

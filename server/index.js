@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import beachRoutes from './routes/beach.js';
 import templeRoutes from './routes/temple.js';
+import equipmentRoutes from './routes/equipment.js';
 import { manaRegenerationService } from './services/manaRegeneration.js';
 
 dotenv.config();
@@ -26,6 +27,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/beach', beachRoutes);
 app.use('/api/temple', templeRoutes);
+app.use('/api/equipment', equipmentRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -55,6 +57,12 @@ app.get('/api/docs', (req, res) => {
                 'POST /api/temple/pray': 'Spend mana to gain random stat points (5/50/all mana)',
                 'GET /api/temple/efficiency': 'Get current prayer efficiency based on total stats'
             },
+            equipment: {
+                'GET /api/equipment/shop': 'View available equipment for purchase (query: type=all/weapons/armor)',
+                'POST /api/equipment/purchase': 'Buy equipment with gold validation',
+                'GET /api/equipment/inventory': 'View player\'s equipped items and inventory',
+                'POST /api/equipment/slot/:slot': 'Equip/unequip items in specific slots (weapon/head/body/legs/hands/feet)'
+            },
             players: {
                 'GET /api/players/:username': 'Get player profile',
                 'PUT /api/players/:username': 'Update player profile',
@@ -63,13 +71,7 @@ app.get('/api/docs', (req, res) => {
                 'POST /api/players/:username/action': 'Execute player action',
                 'GET /api/players/leaderboard': 'Get leaderboard'
             },
-            items: {
-                'GET /api/items': 'List all items',
-                'GET /api/items/:id': 'Get item details',
-                'POST /api/items/use': 'Use an item',
-                'POST /api/items/equip': 'Equip an item',
-                'POST /api/items/unequip': 'Unequip an item'
-            },
+            // Equipment system replaces generic items API
             combat: {
                 'POST /api/combat/attack': 'Attack target',
                 'GET /api/combat/logs/:playerId': 'Get combat logs',

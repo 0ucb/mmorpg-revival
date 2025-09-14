@@ -67,11 +67,9 @@ router.post('/register', async (req, res) => {
             .from('player_stats')
             .insert({
                 player_id: authData.user.id,
-                strength: 10,
-                defense: 10,
-                agility: 10,
-                intelligence: 10,
-                luck: 5,
+                strength: 10.000,
+                speed: 10.000,
+                intelligence: 10.000,
                 stat_points: 0
             });
 
@@ -264,11 +262,9 @@ router.post('/oauth/callback', async (req, res) => {
                     .from('player_stats')
                     .insert({
                         player_id: user.id,
-                        strength: 10,
-                        defense: 10,
-                        agility: 10,
-                        intelligence: 10,
-                        luck: 5,
+                        strength: 10.000,
+                        speed: 10.000,
+                        intelligence: 10.000,
                         stat_points: 0
                     });
             }

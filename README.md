@@ -13,20 +13,25 @@ MarcoLand was a text-based, asynchronous MMORPG where players could battle monst
 ### ✅ Implemented Features
 - **Authentication System**: Email/password and OAuth (Google, Discord, GitHub)
 - **Character Creation**: Automatic character setup with starting stats
+- **Beach Combat System**: Fight 30 monsters (Goblin to Nazgul) with turn-based combat
+- **Temple Prayer System**: Convert mana to stat points (Strength/Speed/Intelligence)
+- **Equipment System**: Complete equipment system with 51 weapons + 56 armor pieces
+  - Equipment shop API (browse, purchase, equip/unequip)
+  - Authentic encumbrance and speed modifier mechanics
+  - Combat integration (weapon damage, armor protection)
+  - Atomic database operations prevent corruption
+- **Level Progression**: Automatic level-ups, XP calculation, stat point rewards
 - **Mana Regeneration**: 6-hour cycle resource system
 - **Database Security**: Complete RLS policies for all tables
 - **API Foundation**: RESTful endpoints with JWT authentication
-- **Game Configuration**: All formulas and mechanics from original game
+- **Game Configuration**: All authentic formulas and mechanics from original game
 
 ### 🔄 In Progress
-- Beach combat system
-- Character progression (temple praying)
-- Inventory management
-- Basic town system
+- **Shop System**: Web interface for equipment purchases
 
 ### 📋 Planned Features
-- **Combat System**: Fight monsters and other players
-- **Items & Equipment**: 50+ weapons and armor pieces
+- **Web Interface**: Complete frontend for all game systems
+- **PvP Combat**: Fight other players with intelligence modifiers
 - **Quests**: Missions for experience and rewards
 - **Towns**: Guild system for group play
 - **Trading**: Player-to-player marketplace
@@ -69,7 +74,7 @@ PORT=3000
    - Go to your Supabase dashboard
    - Navigate to SQL Editor
    - Run the scripts in order:
-     1. `/database/schema.sql`
+     1. `/database/migrate-to-equipment-system.sql` (includes schema + equipment functions)
      2. `/database/api-functions.sql`
      3. `/database/system-tables.sql`
      4. `/database/rls-policies.sql`
@@ -84,10 +89,16 @@ PORT=3000
 npm run dev
 ```
 
-7. Test the authentication:
+7. Seed game data:
+```bash
+node database/seeders/monsters.js     # Load monster data
+node database/seeders/equipment.js    # Load 51 weapons + 56 armor pieces
+```
+
+8. Test the game:
    - Open `http://localhost:3000/test-auth.html`
-   - Try registering a new account
-   - Test login functionality
+   - Register a new account and get auth token
+   - Use token to test combat: `curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:3000/api/beach/monsters`
 
 ## Project Structure
 
@@ -133,11 +144,25 @@ The API is available at `http://localhost:3000/api/docs` when the server is runn
 - `POST /api/auth/oauth/:provider` - Start OAuth flow (google/discord/github)
 - `POST /api/auth/oauth/callback` - Handle OAuth callback
 
+#### Beach Combat
+- `GET /api/beach/monsters` - List all 30 monsters with efficiency stats
+- `POST /api/beach/fight` - Fight a monster (1 mana per fight)
+
+#### Temple Training
+- `POST /api/temple/pray` - Convert mana to stat points (5/50/all mana)
+- `GET /api/temple/efficiency` - View current prayer efficiency
+
+#### Equipment System
+- `GET /api/equipment/shop` - Browse available equipment for purchase
+- `POST /api/equipment/purchase` - Buy equipment with gold
+- `GET /api/equipment/inventory` - View equipped items and inventory
+- `POST /api/equipment/slot/:slot` - Equip/unequip items in slots
+
 ### Coming Soon
-- Beach combat endpoints
-- Temple praying endpoints
-- Inventory management
-- Market/trading system
+- Web interface for all game systems
+- Equipment selling back to shop
+- Player-to-player trading system
+- PvP combat system
 
 ## Game Mechanics
 
@@ -146,12 +171,10 @@ The API is available at `http://localhost:3000/api/docs` when the server is runn
 - **HP**: Increases with level, heals with gold/gems
 - **Gold**: Currency earned from monsters and trading
 
-### Character Stats
+### Character Stats (3 Trainable Stats)
 - **Strength**: Increases melee damage and equipment capacity
-- **Speed**: Reduces damage penalty from encumbrance
-- **Intelligence**: Provides damage bonus in PvP
-- **Defense**: Reduces incoming damage
-- **Luck**: Affects loot and critical chances
+- **Speed**: Reduces damage penalty from encumbrance, determines attack order
+- **Intelligence**: Provides damage multiplier in PvP (0.75x to 1.50x), required for spells
 
 ### Combat Formulas
 ```
@@ -164,7 +187,7 @@ Speed Modifier = 0.5 + 0.5 × (Speed / Encumbrance), capped at 1.0
 - Experience to next level: `150 × (level²) + 200`
 - Max HP: `2 × (level²) + 3 × level`
 - Max Mana: `(level × 3) + 50`
-- Starting stats: 10 STR/DEF/AGI/INT, 5 LUCK
+- Starting stats: 10 Strength/Speed/Intelligence each
 
 ## Architecture
 
@@ -183,7 +206,9 @@ Contributions are welcome! Please feel free to submit pull requests.
 
 ### Development Guidelines
 1. Read [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) for roadmap
-2. Check [`HANDOFF_AUTH_COMPLETE.md`](./HANDOFF_AUTH_COMPLETE.md) for current state
+2. Check [`HANDOFF_COMBAT_COMPLETE.md`](./HANDOFF_COMBAT_COMPLETE.md) for current state
+3. Review [`MARCOLAND_DATA_EXTRACTION.md`](./MARCOLAND_DATA_EXTRACTION.md) for authentic game mechanics
+4. See [`NEXT_PR_PLAN.md`](./NEXT_PR_PLAN.md) for upcoming features
 3. Follow existing code patterns
 4. Test all endpoints
 5. Update documentation
@@ -223,12 +248,12 @@ For questions or issues, please open an issue on GitHub or check the `/scraped-d
 - [x] Mana regeneration service
 - [x] API foundation with JWT
 
-### Phase 2: Core Gameplay 🔄
-- [ ] Beach combat system
-- [ ] Temple praying for stats
-- [ ] Inventory and equipment
-- [ ] Shop for buying/selling
-- [ ] Death and revival system
+### Phase 2: Core Gameplay ✅
+- [x] Beach combat system (30 monsters, turn-based combat, level progression)
+- [x] Temple praying for stats (convert mana to Strength/Speed/Intelligence)
+- [x] Equipment system (51 weapons, 56 armor pieces with combat integration)
+- [ ] Equipment shop frontend interface
+- [ ] Forging system for equipment enhancement
 
 ### Phase 3: Social Features 📋
 - [ ] Basic towns (guilds)

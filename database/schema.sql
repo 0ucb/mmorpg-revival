@@ -14,7 +14,11 @@ CREATE TABLE players (
     max_health INTEGER DEFAULT 100,
     mana INTEGER DEFAULT 50,
     max_mana INTEGER DEFAULT 50,
+    magic_points INTEGER DEFAULT 5,
+    max_magic_points INTEGER DEFAULT 5,
     gold INTEGER DEFAULT 100,
+    metals INTEGER DEFAULT 0,
+    gems INTEGER DEFAULT 0,
     location_x INTEGER DEFAULT 0,
     location_y INTEGER DEFAULT 0,
     current_map VARCHAR(50) DEFAULT 'spawn',
@@ -26,37 +30,71 @@ CREATE TABLE players (
 -- Player stats
 CREATE TABLE player_stats (
     player_id UUID PRIMARY KEY REFERENCES players(id) ON DELETE CASCADE,
-    strength INTEGER DEFAULT 10,
-    defense INTEGER DEFAULT 10,
-    agility INTEGER DEFAULT 10,
-    intelligence INTEGER DEFAULT 10,
-    luck INTEGER DEFAULT 5,
+    strength DECIMAL(6,3) DEFAULT 10.000,
+    speed DECIMAL(6,3) DEFAULT 10.000,
+    intelligence DECIMAL(6,3) DEFAULT 10.000,
     stat_points INTEGER DEFAULT 0
 );
 
--- Items/Equipment table
-CREATE TABLE items (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    name VARCHAR(100) NOT NULL,
-    description TEXT,
-    item_type VARCHAR(30) NOT NULL, -- weapon, armor, consumable, quest, misc
-    rarity VARCHAR(20) DEFAULT 'common', -- common, uncommon, rare, epic, legendary
-    level_requirement INTEGER DEFAULT 1,
-    stats JSONB, -- flexible stats storage
-    icon_url TEXT,
-    stackable BOOLEAN DEFAULT false,
-    max_stack INTEGER DEFAULT 1
+-- Equipment System Tables
+
+-- Weapons have unique properties
+CREATE TABLE weapons (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR NOT NULL UNIQUE,
+    damage_min INTEGER NOT NULL,
+    damage_max INTEGER NOT NULL,
+    strength_required INTEGER DEFAULT 0,
+    cost_gold INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
 );
 
--- Player inventory
-CREATE TABLE inventory (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    player_id UUID REFERENCES players(id) ON DELETE CASCADE,
-    item_id UUID REFERENCES items(id),
-    quantity INTEGER DEFAULT 1,
-    slot_position INTEGER,
-    is_equipped BOOLEAN DEFAULT false,
-    UNIQUE(player_id, slot_position)
+-- Armor organized by slot
+CREATE TABLE armor (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name VARCHAR NOT NULL UNIQUE,
+    slot VARCHAR NOT NULL CHECK (slot IN ('head', 'body', 'legs', 'hands', 'feet')),
+    protection INTEGER NOT NULL DEFAULT 0,
+    encumbrance INTEGER NOT NULL DEFAULT 0,
+    strength_required INTEGER DEFAULT 0,
+    cost_gold INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Single row per player, NULL means slot empty
+CREATE TABLE player_equipped (
+    player_id UUID PRIMARY KEY REFERENCES players(id),
+    weapon_id UUID REFERENCES weapons(id),
+    head_id UUID REFERENCES armor(id),
+    body_id UUID REFERENCES armor(id),
+    legs_id UUID REFERENCES armor(id),
+    hands_id UUID REFERENCES armor(id),
+    feet_id UUID REFERENCES armor(id),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Player's unequipped items (inventory)
+CREATE TABLE player_inventory (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    player_id UUID REFERENCES players(id),
+    weapon_id UUID REFERENCES weapons(id),
+    armor_id UUID REFERENCES armor(id),
+    created_at TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT check_single_item CHECK (
+        (weapon_id IS NOT NULL AND armor_id IS NULL) OR
+        (weapon_id IS NULL AND armor_id IS NOT NULL)
+    )
+);
+
+-- Cached combat stats for performance
+CREATE TABLE player_combat_stats (
+    player_id UUID PRIMARY KEY REFERENCES players(id),
+    total_protection INTEGER DEFAULT 0,
+    total_encumbrance INTEGER DEFAULT 0,
+    speed_modifier DECIMAL(3,2) DEFAULT 1.00,
+    weapon_damage_min INTEGER DEFAULT 0,
+    weapon_damage_max INTEGER DEFAULT 0,
+    updated_at TIMESTAMP DEFAULT NOW()
 );
 
 -- Quests
@@ -152,22 +190,29 @@ CREATE TABLE friends (
     PRIMARY KEY (player_id, friend_id)
 );
 
--- Market/Trading
+-- Market/Trading (Future: equipment trading)
 CREATE TABLE market_listings (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     seller_id UUID REFERENCES players(id) ON DELETE CASCADE,
-    item_id UUID REFERENCES items(id),
+    weapon_id UUID REFERENCES weapons(id),
+    armor_id UUID REFERENCES armor(id),
     quantity INTEGER DEFAULT 1,
     price INTEGER NOT NULL,
     status VARCHAR(20) DEFAULT 'active', -- active, sold, cancelled
     listed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    sold_at TIMESTAMP WITH TIME ZONE
+    sold_at TIMESTAMP WITH TIME ZONE,
+    CONSTRAINT check_single_market_item CHECK (
+        (weapon_id IS NOT NULL AND armor_id IS NULL) OR
+        (weapon_id IS NULL AND armor_id IS NOT NULL)
+    )
 );
 
 -- Row Level Security Policies
 ALTER TABLE players ENABLE ROW LEVEL SECURITY;
 ALTER TABLE player_stats ENABLE ROW LEVEL SECURITY;
-ALTER TABLE inventory ENABLE ROW LEVEL SECURITY;
+ALTER TABLE player_inventory ENABLE ROW LEVEL SECURITY;
+ALTER TABLE player_equipped ENABLE ROW LEVEL SECURITY;
+ALTER TABLE player_combat_stats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE player_quests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE combat_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE chat_messages ENABLE ROW LEVEL SECURITY;
@@ -185,8 +230,20 @@ CREATE POLICY "Players can update their own profile" ON players
 CREATE POLICY "Players can view other players' public info" ON players
     FOR SELECT USING (true);
 
-CREATE POLICY "Players can manage their own inventory" ON inventory
+CREATE POLICY "Players can manage their own inventory" ON player_inventory
     FOR ALL USING (auth.uid() = player_id);
+
+CREATE POLICY "Players can manage their own equipment" ON player_equipped
+    FOR ALL USING (auth.uid() = player_id);
+
+CREATE POLICY "Players can view their own combat stats" ON player_combat_stats
+    FOR SELECT USING (auth.uid() = player_id);
+
+CREATE POLICY "Players can view weapons" ON weapons
+    FOR SELECT USING (true);
+
+CREATE POLICY "Players can view armor" ON armor
+    FOR SELECT USING (true);
 
 CREATE POLICY "Players can view their own quests" ON player_quests
     FOR ALL USING (auth.uid() = player_id);
@@ -194,7 +251,10 @@ CREATE POLICY "Players can view their own quests" ON player_quests
 -- Indexes for performance
 CREATE INDEX idx_players_username ON players(username);
 CREATE INDEX idx_players_location ON players(current_map, location_x, location_y);
-CREATE INDEX idx_inventory_player ON inventory(player_id);
+CREATE INDEX idx_player_inventory_player ON player_inventory(player_id);
+CREATE INDEX idx_player_equipped_player ON player_equipped(player_id);
+CREATE INDEX idx_weapons_cost ON weapons(cost_gold);
+CREATE INDEX idx_armor_slot_cost ON armor(slot, cost_gold);
 CREATE INDEX idx_combat_logs_timestamp ON combat_logs(timestamp);
 CREATE INDEX idx_chat_messages_timestamp ON chat_messages(timestamp);
 CREATE INDEX idx_market_listings_status ON market_listings(status);
