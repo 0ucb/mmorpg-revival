@@ -1,24 +1,13 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import { createClient } from '@supabase/supabase-js';
-import playerRoutes from './routes/players.js';
-import itemRoutes from './routes/items.js';
-import combatRoutes from './routes/combat.js';
-import questRoutes from './routes/quests.js';
-import marketRoutes from './routes/market.js';
 import authRoutes from './routes/auth.js';
+import { manaRegenerationService } from './services/manaRegeneration.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-
-// Initialize Supabase client
-export const supabase = createClient(
-    process.env.SUPABASE_URL,
-    process.env.SUPABASE_SERVICE_KEY
-);
 
 // Middleware
 app.use(cors());
@@ -33,11 +22,6 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/players', playerRoutes);
-app.use('/api/items', itemRoutes);
-app.use('/api/combat', combatRoutes);
-app.use('/api/quests', questRoutes);
-app.use('/api/market', marketRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -110,8 +94,26 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Endpoint not found' });
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`MMORPG API Server running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
     console.log(`API Documentation: http://localhost:${PORT}/api/docs`);
+    
+    manaRegenerationService.start().catch(console.error);
+});
+
+process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    manaRegenerationService.stop();
+    server.close(() => {
+        console.log('HTTP server closed');
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('SIGINT signal received: closing HTTP server');
+    manaRegenerationService.stop();
+    server.close(() => {
+        console.log('HTTP server closed');
+    });
 });
