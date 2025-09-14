@@ -201,3 +201,97 @@ export function checkLevelUp(currentLevel, currentExp, newExp) {
         levelsGained: newLevel - currentLevel
     };
 }
+
+// Temple Prayer Functions
+export function distributeStatsWeighted(totalPoints) {
+    // Don't distribute if no points to distribute
+    if (totalPoints <= 0) {
+        return { strength: 0, speed: 0, intelligence: 0 };
+    }
+    
+    // Better random distribution using weighted approach
+    const weights = [Math.random(), Math.random(), Math.random()];
+    const sum = weights.reduce((a, b) => a + b);
+    const normalized = weights.map(w => w / sum);
+    
+    // Distribute points based on weights
+    let distributed = {
+        strength: Math.floor(totalPoints * normalized[0]),
+        speed: Math.floor(totalPoints * normalized[1]),
+        intelligence: Math.floor(totalPoints * normalized[2])
+    };
+    
+    // Handle rounding remainder by randomly distributing leftover points
+    let remainder = totalPoints - (distributed.strength + distributed.speed + distributed.intelligence);
+    const stats = ['strength', 'speed', 'intelligence'];
+    
+    while (remainder > 0) {
+        const randomStat = stats[Math.floor(Math.random() * 3)];
+        distributed[randomStat]++;
+        remainder--;
+    }
+    
+    return distributed;
+}
+
+export function calculateStatGains(currentTotalStats, manaSpent) {
+    // Don't process if less than 5 mana
+    if (manaSpent < 5) {
+        return { strength: 0, speed: 0, intelligence: 0 };
+    }
+    
+    // Round down to nearest 5 mana (original game only accepts multiples of 5)
+    const effectiveMana = Math.floor(manaSpent / 5) * 5;
+    
+    // Get base efficiency (per 50 mana)
+    const efficiency = getPrayingEfficiency(currentTotalStats);
+    
+    // Calculate expected gains
+    const expectedTotal = (effectiveMana / 50) * efficiency;
+    
+    // Add variance: ±20% as per original MarcoLand
+    const variance = 0.8 + (Math.random() * 0.4);
+    const actualTotal = Math.max(0, Math.round(expectedTotal * variance));
+    
+    // Distribute randomly among the three stats
+    return distributeStatsWeighted(actualTotal);
+}
+
+export function calculateStatGainsWithDiminishing(currentTotalStats, manaSpent) {
+    // For large mana amounts, account for diminishing returns as stats increase
+    if (manaSpent < 5) {
+        return { strength: 0, speed: 0, intelligence: 0, totalGains: 0 };
+    }
+    
+    // Round down to nearest 5 mana
+    let remaining = Math.floor(manaSpent / 5) * 5;
+    let totalGains = { strength: 0, speed: 0, intelligence: 0 };
+    let runningTotal = currentTotalStats;
+    
+    // Process in 50-mana chunks for efficiency calculations
+    while (remaining > 0) {
+        const chunk = Math.min(remaining, 50);
+        const efficiency = getPrayingEfficiency(runningTotal);
+        const expectedGains = (chunk / 50) * efficiency;
+        
+        // Add variance for this chunk
+        const variance = 0.8 + (Math.random() * 0.4);
+        const actualGains = Math.max(0, Math.round(expectedGains * variance));
+        
+        // Distribute this chunk's gains
+        const distributed = distributeStatsWeighted(actualGains);
+        
+        // Add to totals
+        Object.keys(distributed).forEach(stat => {
+            totalGains[stat] += distributed[stat];
+        });
+        
+        // Update running total for next chunk's efficiency calculation
+        runningTotal += actualGains;
+        remaining -= chunk;
+    }
+    
+    // Add convenience property for total gains
+    totalGains.totalGains = totalGains.strength + totalGains.speed + totalGains.intelligence;
+    return totalGains;
+}

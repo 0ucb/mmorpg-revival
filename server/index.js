@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import beachRoutes from './routes/beach.js';
+import templeRoutes from './routes/temple.js';
 import { manaRegenerationService } from './services/manaRegeneration.js';
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/beach', beachRoutes);
+app.use('/api/temple', templeRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -48,6 +50,10 @@ app.get('/api/docs', (req, res) => {
             beach: {
                 'GET /api/beach/monsters': 'List all monsters available for fighting',
                 'POST /api/beach/fight': 'Fight a monster (requires mana)'
+            },
+            temple: {
+                'POST /api/temple/pray': 'Spend mana to gain random stat points (5/50/all mana)',
+                'GET /api/temple/efficiency': 'Get current prayer efficiency based on total stats'
             },
             players: {
                 'GET /api/players/:username': 'Get player profile',
