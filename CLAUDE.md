@@ -30,11 +30,24 @@ Recreation of MarcoLand, a defunct browser-based MMORPG from 2006-2008. Focus on
 - Enables third-party clients, mobile apps, automation
 - Easy testing and development
 
+### Test-Driven Development (TDD)
+- **Always write tests first** before implementing features
+- Red-Green-Refactor cycle: failing test → make it pass → improve code
+- Test API endpoints with actual HTTP requests
+- Test database operations with real database interactions
+- Test game mechanics against scraped data formulas
+- Use descriptive test names that explain the expected behavior
+- Keep tests fast and isolated
+- Mock external services (Supabase) only when necessary for speed
+
 ### Development Workflow
 1. Check `/database/schema.sql` for data structure
 2. Reference `/scraped-data/` for game mechanics
-3. Build incrementally: auth → characters → core gameplay
-4. Test API endpoints as you build
+3. **Write failing tests** for the feature you're building
+4. Build incrementally: auth → characters → core gameplay
+5. Make tests pass with minimal code
+6. Refactor and improve
+7. Test API endpoints as you build
 
 ### Key Files
 - `/database/` - Schema and functions
@@ -47,6 +60,9 @@ Recreation of MarcoLand, a defunct browser-based MMORPG from 2006-2008. Focus on
 npm run dev         # Development server
 npm run scrape      # Extract game data
 npm run db:migrate  # Database setup
+
+# Troubleshooting
+wmic process where "name='node.exe'" delete  # Kill all Node.js processes (Windows)
 ```
 
 ### Environment Setup

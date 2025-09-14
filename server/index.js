@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
+import beachRoutes from './routes/beach.js';
 import { manaRegenerationService } from './services/manaRegeneration.js';
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
 
 // API Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/beach', beachRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -42,6 +44,10 @@ app.get('/api/docs', (req, res) => {
                 'POST /api/auth/login': 'Login player',
                 'POST /api/auth/logout': 'Logout player',
                 'GET /api/auth/session': 'Get current session'
+            },
+            beach: {
+                'GET /api/beach/monsters': 'List all monsters available for fighting',
+                'POST /api/beach/fight': 'Fight a monster (requires mana)'
             },
             players: {
                 'GET /api/players/:username': 'Get player profile',

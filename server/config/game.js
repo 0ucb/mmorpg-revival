@@ -44,7 +44,12 @@ export const gameConfig = {
             { ratio: 4.00, modifier: 1.30 },
             { ratio: 5.00, modifier: 1.40 },
             { ratio: Infinity, modifier: 1.50 }
-        ]
+        ],
+        
+        // Beach combat settings
+        manaPerFight: 1,
+        baseDamageVariance: 0.2, // ±20% damage variance
+        gemDropRate: 0.05 // 5% chance for gem drops
     },
     
     economy: {
@@ -101,4 +106,98 @@ export function getPrayingEfficiency(totalStats) {
     }
     
     return gameConfig.stats.prayingCaps[gameConfig.stats.prayingCaps.length - 1].statsPerFiftyMana;
+}
+
+// Combat Functions
+export function calculatePlayerDamage(playerStats, weaponDamage = 0) {
+    const baseDamage = playerStats.strength + weaponDamage;
+    const variance = gameConfig.combat.baseDamageVariance;
+    const minDamage = Math.floor(baseDamage * (1 - variance));
+    const maxDamage = Math.ceil(baseDamage * (1 + variance));
+    return Math.floor(Math.random() * (maxDamage - minDamage + 1)) + minDamage;
+}
+
+export function calculateMonsterDamage(monster) {
+    if (!monster.loot_table?.damage_range) {
+        return monster.damage;
+    }
+    
+    const { min, max } = monster.loot_table.damage_range;
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function applyDefense(damage, defense) {
+    return Math.max(1, damage - defense);
+}
+
+export function checkGemDrop(monster) {
+    const dropRate = gameConfig.combat.gemDropRate;
+    return Math.random() < dropRate;
+}
+
+export function simulateCombat(player, playerStats, monster) {
+    const combatLog = [];
+    let playerHp = player.health;
+    let monsterHp = monster.health;
+    
+    while (playerHp > 0 && monsterHp > 0) {
+        // Player attacks first
+        const playerDamage = calculatePlayerDamage(playerStats, 0);
+        const damageDealt = applyDefense(playerDamage, monster.defense);
+        monsterHp = Math.max(0, monsterHp - damageDealt);
+        
+        combatLog.push({
+            attacker: 'player',
+            damage: damageDealt,
+            weapon: 'Rusty Dagger', // TODO: Get actual weapon
+            target: monster.name,
+            targetHpRemaining: monsterHp
+        });
+        
+        if (monsterHp <= 0) break;
+        
+        // Monster counterattacks
+        const monsterDamage = calculateMonsterDamage(monster);
+        const damageReceived = applyDefense(monsterDamage, playerStats.defense);
+        playerHp = Math.max(0, playerHp - damageReceived);
+        
+        combatLog.push({
+            attacker: 'monster',
+            damage: damageReceived,
+            weapon: `it's Little dagger`, // TODO: Monster weapon names
+            target: 'you',
+            targetHpRemaining: playerHp
+        });
+    }
+    
+    const playerWon = monsterHp <= 0;
+    const rewards = playerWon ? {
+        experience: monster.experience_reward,
+        gold: monster.gold_reward,
+        gems: checkGemDrop(monster) ? 1 : 0
+    } : null;
+    
+    return {
+        playerWon,
+        playerHpAfter: playerHp,
+        combatLog,
+        rewards
+    };
+}
+
+export function checkLevelUp(currentLevel, currentExp, newExp) {
+    let newLevel = currentLevel;
+    let expForNextLevel = getExperienceToNextLevel(currentLevel);
+    
+    while (newExp >= expForNextLevel) {
+        newLevel++;
+        expForNextLevel = getExperienceToNextLevel(newLevel);
+    }
+    
+    const leveledUp = newLevel > currentLevel;
+    return {
+        newLevel,
+        leveledUp,
+        levelsGained: newLevel - currentLevel
+    };
 }

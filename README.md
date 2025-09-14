@@ -6,21 +6,31 @@ A modern recreation of the classic browser-based MMORPG MarcoLand (formerly at t
 
 MarcoLand was a text-based, asynchronous MMORPG where players could battle monsters, complete quests, trade items, and join guilds. This project aims to recreate the game using modern web technologies while preserving the original gameplay experience.
 
-## Features
+## Current Status
 
-### Core Gameplay
-- **Character Development**: Level up your character, increase stats (Strength, Speed, Intelligence)
-- **Combat System**: Fight monsters and other players with strategic turn-based combat
-- **Items & Equipment**: 50+ weapons and various armor pieces with different requirements
-- **Quests**: Complete missions for experience and rewards
-- **Guilds**: Join or create guilds to play with others
-- **Trading**: Player-to-player marketplace for items
+🚧 **In Active Development** - Foundation Complete
 
-### Technical Features
-- **REST API**: All game actions available via API endpoints
-- **Modern Backend**: PostgreSQL database via Supabase
-- **Authentication**: Secure user authentication system
-- **Cross-Platform**: Play on any device with a web browser
+### ✅ Implemented Features
+- **Authentication System**: Email/password and OAuth (Google, Discord, GitHub)
+- **Character Creation**: Automatic character setup with starting stats
+- **Mana Regeneration**: 6-hour cycle resource system
+- **Database Security**: Complete RLS policies for all tables
+- **API Foundation**: RESTful endpoints with JWT authentication
+- **Game Configuration**: All formulas and mechanics from original game
+
+### 🔄 In Progress
+- Beach combat system
+- Character progression (temple praying)
+- Inventory management
+- Basic town system
+
+### 📋 Planned Features
+- **Combat System**: Fight monsters and other players
+- **Items & Equipment**: 50+ weapons and armor pieces
+- **Quests**: Missions for experience and rewards
+- **Towns**: Guild system for group play
+- **Trading**: Player-to-player marketplace
+- **Town Wars**: Large-scale PvP battles
 
 ## Quick Start
 
@@ -33,7 +43,7 @@ MarcoLand was a text-based, asynchronous MMORPG where players could battle monst
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/mmorpg-revival.git
+git clone https://github.com/0ucb/mmorpg-revival.git
 cd mmorpg-revival
 ```
 
@@ -61,13 +71,23 @@ PORT=3000
    - Run the scripts in order:
      1. `/database/schema.sql`
      2. `/database/api-functions.sql`
+     3. `/database/system-tables.sql`
+     4. `/database/rls-policies.sql`
+   
+5. Configure OAuth providers (optional):
+   - In Supabase Dashboard → Authentication → Providers
+   - Enable Google, Discord, and/or GitHub
+   - Set redirect URL to `http://localhost:3000/auth/callback`
 
-5. Start the development server:
+6. Start the development server:
 ```bash
 npm run dev
 ```
 
-6. Open your browser to `http://localhost:3000`
+7. Test the authentication:
+   - Open `http://localhost:3000/test-auth.html`
+   - Try registering a new account
+   - Test login functionality
 
 ## Project Structure
 
@@ -103,50 +123,70 @@ npm run db:migrate   # Run database migrations
 
 The API is available at `http://localhost:3000/api/docs` when the server is running.
 
-### Key Endpoints
+### Currently Available Endpoints
 
 #### Authentication
-- `POST /api/auth/register` - Create new account
-- `POST /api/auth/login` - Login to existing account
-- `GET /api/auth/session` - Get current session
+- `POST /api/auth/register` - Create new account with character
+- `POST /api/auth/login` - Login with email/password
+- `POST /api/auth/logout` - End current session
+- `GET /api/auth/session` - Validate and get session info
+- `POST /api/auth/oauth/:provider` - Start OAuth flow (google/discord/github)
+- `POST /api/auth/oauth/callback` - Handle OAuth callback
 
-#### Player Actions
-- `GET /api/players/:username` - Get player profile
-- `POST /api/players/:username/action` - Execute game action
-- `GET /api/players/:username/inventory` - Get inventory
-
-#### Game Data
-- `GET /api/items` - List all items
-- `GET /api/quests` - Available quests
-- `GET /api/market/listings` - Market listings
+### Coming Soon
+- Beach combat endpoints
+- Temple praying endpoints
+- Inventory management
+- Market/trading system
 
 ## Game Mechanics
 
+### Resource System
+- **Mana**: Regenerates every 6 hours to full
+- **HP**: Increases with level, heals with gold/gems
+- **Gold**: Currency earned from monsters and trading
+
 ### Character Stats
-- **Strength**: Increases melee damage
+- **Strength**: Increases melee damage and equipment capacity
 - **Speed**: Reduces damage penalty from encumbrance
 - **Intelligence**: Provides damage bonus in PvP
+- **Defense**: Reduces incoming damage
+- **Luck**: Affects loot and critical chances
 
-### Combat Formula
+### Combat Formulas
 ```
 PvE Damage = (Strength + Weapon Damage) × Speed Modifier - Enemy Protection
 PvP Damage = (Strength + Weapon Damage) × Speed Modifier × Intelligence Modifier - Enemy Protection
+Speed Modifier = 0.5 + 0.5 × (Speed / Encumbrance), capped at 1.0
 ```
 
-### Leveling
-- Experience needed: `150 × (level²) + 200`
+### Progression
+- Experience to next level: `150 × (level²) + 200`
 - Max HP: `2 × (level²) + 3 × level`
-- Max Mana: `level × 3 + 50`
+- Max Mana: `(level × 3) + 50`
+- Starting stats: 10 STR/DEF/AGI/INT, 5 LUCK
+
+## Architecture
+
+See [`ARCHITECTURE_ABSTRACT.md`](./ARCHITECTURE_ABSTRACT.md) for detailed system architecture.
+
+### Key Design Principles
+- **API-First**: Every action available via REST endpoints
+- **Stateless**: JWT authentication, no server sessions
+- **Configurable**: Game mechanics in `/server/config/game.js`
+- **Secure**: Row-level security on all database tables
+- **Clean Code**: No backwards compatibility, forward-looking only
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit pull requests.
 
 ### Development Guidelines
-1. Preserve the original game's simplicity
-2. Ensure all features are API-accessible
-3. Test new features thoroughly
-4. Document any new game mechanics
+1. Read [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) for roadmap
+2. Check [`HANDOFF_AUTH_COMPLETE.md`](./HANDOFF_AUTH_COMPLETE.md) for current state
+3. Follow existing code patterns
+4. Test all endpoints
+5. Update documentation
 
 ## Data Recovery
 
@@ -172,20 +212,37 @@ This project is a fan recreation for educational purposes. All game mechanics an
 
 For questions or issues, please open an issue on GitHub or check the `/scraped-data/wiki/` directory for original game documentation.
 
-## Roadmap
+## Development Roadmap
 
+### Phase 1: Foundation ✅
 - [x] Project setup and structure
 - [x] Database schema design
 - [x] Data recovery from Wayback Machine
-- [x] API server foundation
-- [ ] User authentication
-- [ ] Basic game interface
-- [ ] Combat system
-- [ ] Inventory management
+- [x] Authentication system (email/OAuth)
+- [x] Character creation
+- [x] Mana regeneration service
+- [x] API foundation with JWT
+
+### Phase 2: Core Gameplay 🔄
+- [ ] Beach combat system
+- [ ] Temple praying for stats
+- [ ] Inventory and equipment
+- [ ] Shop for buying/selling
+- [ ] Death and revival system
+
+### Phase 3: Social Features 📋
+- [ ] Basic towns (guilds)
+- [ ] PvP combat (10 attacks/day)
+- [ ] Player marketplace
+- [ ] Chat system
+- [ ] Friends list
+
+### Phase 4: Advanced Systems 📋
 - [ ] Quest system
-- [ ] Guild system
-- [ ] Market/trading
-- [ ] Mobile-responsive design
+- [ ] Town wars
+- [ ] Siege weapons
+- [ ] Legions
+- [ ] Achievements
 
 ---
 
