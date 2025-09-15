@@ -1,8 +1,16 @@
 import React from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import LoginScreen from './LoginScreen'
 import Layout from './Layout'
-import EquipmentScreen from './EquipmentScreen'
+import HomeScreen from './screens/HomeScreen'
+import CityScreen from './screens/CityScreen'
+import BattleScreen from './screens/BattleScreen'
+import BeachScreen from './screens/BeachScreen'
+import CombatScreen from './screens/CombatScreen'
+import BlacksmithScreen from './screens/BlacksmithScreen'
+import TempleScreen from './screens/TempleScreen'
+import EquipmentScreen from './screens/EquipmentScreen'
 
 export const AuthWrapper = () => {
   const { user, loading, error } = useAuth()
@@ -47,11 +55,21 @@ export const AuthWrapper = () => {
     )
   }
 
-  // If authenticated, show the main game interface
+  // If authenticated, show the main game interface with routing
   if (user) {
     return (
       <Layout>
-        <EquipmentScreen />
+        <Routes>
+          <Route path="/" element={<HomeScreen />} />
+          <Route path="/city" element={<CityScreen />} />
+          <Route path="/battle" element={<BattleScreen />} />
+          <Route path="/beach" element={<BeachScreen />} />
+          <Route path="/combat" element={<CombatScreen />} />
+          <Route path="/blacksmith" element={<BlacksmithScreen />} />
+          <Route path="/temple" element={<TempleScreen />} />
+          <Route path="/equipment" element={<EquipmentScreen />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </Layout>
     )
   }

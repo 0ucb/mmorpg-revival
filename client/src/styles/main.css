@@ -325,3 +325,424 @@ button:disabled {
     width: 100%;
   }
 }
+
+/* Screen-specific styles */
+
+/* Home Screen */
+.home-screen {
+  padding: 10px;
+}
+
+.welcome-message {
+  text-align: center;
+  margin: 10px 0 20px 0;
+  padding: 10px;
+}
+
+.home-layout {
+  display: flex;
+  gap: 40px;
+  margin-top: 20px;
+}
+
+.home-left-column {
+  flex: 1;
+}
+
+.home-right-column {
+  flex: 1;
+}
+
+.home-left-column h3, 
+.home-right-column h3 {
+  margin: 20px 0 10px 0;
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.stat-row {
+  display: flex;
+  margin: 2px 0;
+  font-size: 10px;
+}
+
+.stat-row span:first-child {
+  width: 140px;
+  display: inline-block;
+}
+
+.stat-row span:last-child {
+  text-align: right;
+  flex: 1;
+}
+
+.city-clan-link {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.my-equipment-link {
+  margin: 15px 0;
+}
+
+.underlined-link {
+  color: #ffffff;
+  text-decoration: underline;
+}
+
+.green-underlined-link {
+  color: #33FF99;
+  text-decoration: underline;
+  text-decoration-color: #ffffff;
+}
+
+/* City Screen */
+.city-screen {
+  padding: 0;
+}
+
+.city-sections {
+  padding: 10px;
+  display: flex;
+  gap: 40px;
+}
+
+.city-column {
+  flex: 1;
+}
+
+.city-column h3 {
+  margin: 15px 0 5px 0;
+  font-size: 11px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.city-links {
+  margin: 0 0 10px 0;
+}
+
+.city-link {
+  display: block;
+  color: #33FF99;
+  text-decoration: none;
+  font-size: 10px;
+  padding: 1px 0;
+  margin: 1px 0;
+}
+
+.city-link:hover {
+  text-decoration: underline;
+}
+
+.city-link.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #666;
+}
+
+.city-link.disabled:hover {
+  text-decoration: none;
+}
+
+/* Battle Screen */
+.battle-screen {
+  padding: 0;
+}
+
+.battle-links {
+  padding: 10px;
+}
+
+.battle-link {
+  display: block;
+  color: #33FF99;
+  text-decoration: none;
+  font-size: 10px;
+  padding: 2px 0;
+  margin: 2px 0;
+}
+
+.battle-link:hover {
+  text-decoration: underline;
+}
+
+.battle-link.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #666;
+}
+
+.battle-link.disabled:hover {
+  text-decoration: none;
+}
+
+/* Beach Screen */
+.beach-screen {
+  padding: 0;
+}
+
+.monsters-table {
+  padding: 10px;
+}
+
+.table-header, .monster-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 20px;
+  padding: 2px 0;
+  align-items: center;
+}
+
+.table-header {
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 5px;
+}
+
+.monster-row {
+  font-size: 10px;
+}
+
+.monster-name {
+  color: #33FF99;
+}
+
+.monster-name.clickable {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.monster-name.clickable:hover {
+  text-decoration: underline;
+}
+
+.monster-level, .monster-hp {
+  color: #ffffff;
+  font-style: italic;
+}
+
+/* Blacksmith Screen */
+.blacksmith-screen {
+  padding: 10px;
+}
+
+.blacksmith-description {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #001100;
+  border: 1px solid #33FF99;
+}
+
+.shop-tabs {
+  display: flex;
+  gap: 5px;
+  margin: 15px 0;
+}
+
+.tab-button {
+  background-color: #003300;
+  color: white;
+  border: 1px solid #33FF99;
+  padding: 8px 15px;
+  cursor: pointer;
+}
+
+.tab-button.active {
+  background-color: #008000;
+}
+
+.shop-table {
+  margin: 10px 0;
+}
+
+.shop-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+  gap: 10px;
+  padding: 5px;
+  align-items: center;
+  border-bottom: 1px solid #333;
+}
+
+.shop-row:hover {
+  background-color: #001100;
+}
+
+.buy-button {
+  padding: 3px 8px;
+  font-size: 10px;
+}
+
+.buy-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Temple Screen */
+.temple-screen {
+  padding: 0;
+}
+
+.temple-lore {
+  padding: 10px;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.temple-lore p {
+  margin: 5px 0;
+}
+
+.tiipsi-name {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+.prayer-result {
+  margin: 15px 10px;
+  padding: 10px;
+  border: 1px solid #33FF99;
+  background-color: #001100;
+}
+
+.prayer-links {
+  padding: 10px;
+  margin: 20px 0;
+}
+
+.prayer-link {
+  display: block;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 10px;
+  padding: 2px 0;
+  margin: 2px 0;
+  cursor: pointer;
+  text-align: left;
+  font-family: inherit;
+}
+
+.prayer-link:hover {
+  text-decoration: underline;
+}
+
+.prayer-link.green {
+  color: #33FF99;
+}
+
+.prayer-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.prayer-link:disabled:hover {
+  text-decoration: none;
+}
+
+.temple-actions {
+  padding: 10px;
+  margin-top: 20px;
+}
+
+/* Navigation improvements */
+.nav-item.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  color: #666;
+}
+
+/* Loading states */
+.loading-content {
+  text-align: center;
+  padding: 50px;
+  color: #33FF99;
+}
+
+/* Combat Screen */
+.combat-screen {
+  padding: 0;
+}
+
+.combat-log {
+  padding: 10px;
+  font-family: monospace;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #ffffff;
+}
+
+.log-entry {
+  margin: 1px 0;
+  padding: 0;
+}
+
+.kill-message {
+  color: #ff0000;
+  font-weight: bold;
+}
+
+.reward-message {
+  color: #ffffff;
+  margin-top: 10px;
+}
+
+.gem-message {
+  color: #ffffff;
+}
+
+.cyan {
+  color: #00ffff;
+}
+
+.combat-actions {
+  padding: 10px;
+  display: flex;
+  gap: 15px;
+}
+
+.action-button {
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.action-button:hover {
+  text-decoration: underline;
+}
+
+.action-button.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.action-button.disabled:hover {
+  text-decoration: none;
+}
+
+.combat-loading {
+  text-align: center;
+  padding: 50px;
+}
+
+.combat-spinner {
+  font-size: 24px;
+  margin: 20px 0;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.combat-error {
+  text-align: center;
+  padding: 30px;
+  color: #FF3333;
+}

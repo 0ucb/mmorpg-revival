@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [refreshTrigger, setRefreshTrigger] = useState(0)
 
   useEffect(() => {
     // Check for existing session from backend
@@ -161,6 +162,12 @@ export const AuthProvider = ({ children }) => {
     }
   }
 
+  // Trigger a refresh of player data in components
+  const refreshPlayer = async () => {
+    setRefreshTrigger(prev => prev + 1)
+    return { data: null, error: null }
+  }
+
   const value = {
     user,
     player,
@@ -171,6 +178,8 @@ export const AuthProvider = ({ children }) => {
     signUp,
     signOut,
     resetPassword,
+    refreshPlayer,
+    refreshTrigger,
     isAuthenticated: !!user,
     setError
   }

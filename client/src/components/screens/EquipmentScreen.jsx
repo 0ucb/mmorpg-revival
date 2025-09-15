@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import InventoryItem from './InventoryItem';
-import { getEquipmentInventory, sellEquipment, equipItem } from '../api/equipment';
+import InventoryItem from '../InventoryItem';
+import { getEquipmentInventory, sellEquipment, equipItem } from '../../api/equipment';
 
 function EquipmentScreen() {
   const [equipmentData, setEquipmentData] = useState(null);
