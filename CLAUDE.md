@@ -10,9 +10,10 @@ Recreation of MarcoLand, a defunct browser-based MMORPG from 2006-2008. Focus on
 
 ## Tech Stack
 - **Database**: Supabase (PostgreSQL)
-- **API**: REST endpoints
-- **Frontend**: Simple HTML/JS (matching original text-based style)
-- **Auth**: Supabase Auth
+- **Backend**: Node.js/Express REST API (port 3000)
+- **Frontend**: React with Vite (port 3001)
+- **Auth**: httpOnly cookies with Supabase backend
+- **Development**: Hot reload with CORS-enabled frontend/backend
 - **Deployment**: TBD
 
 ## Development Practices
@@ -57,9 +58,18 @@ Recreation of MarcoLand, a defunct browser-based MMORPG from 2006-2008. Focus on
 
 ### Commands
 ```bash
-npm run dev         # Development server
+# Backend (root directory)
+npm run dev         # Start backend API server (port 3000)
+npm test            # Run test suite (44 passing tests)
 npm run scrape      # Extract game data
 npm run db:migrate  # Database setup
+
+# Frontend (client directory)  
+cd client && npm run dev  # Start React frontend (port 3001)
+
+# Convenience (Windows)
+start.bat                    # Start backend
+client/start-client.bat      # Start frontend
 
 # Troubleshooting
 wmic process where "name='node.exe'" delete  # Kill all Node.js processes (Windows)
@@ -71,3 +81,24 @@ SUPABASE_URL=your_url
 SUPABASE_ANON_KEY=your_key
 SUPABASE_SERVICE_KEY=your_service_key
 ```
+
+## Current Status (Phase 3 Complete)
+
+### ✅ Production-Ready Single-Player Game
+- **Authentication**: Secure httpOnly cookie system with CORS support
+- **Frontend**: Complete React interface with equipment management, combat, character progression  
+- **Backend**: Full REST API with 44 passing tests
+- **Database**: Complete schema with atomic operations and RLS security
+- **Game Systems**: Beach combat, Temple prayers, Equipment economy (buy/sell)
+
+### Key Authentication Implementation
+- **CORS**: Configured for frontend (port 3001) to backend (port 3000) communication
+- **Sessions**: httpOnly cookies prevent XSS, support credentials across origins
+- **API Routes**: `/api/players/me`, `/api/auth/*`, `/api/equipment/*` all cookie-authenticated
+- **Middleware**: Updated to prioritize cookies over Bearer tokens
+
+### Development Notes
+- Both frontend and backend must run simultaneously for full functionality
+- Frontend proxies `/api` requests to backend automatically
+- Authentication context simplified to use only backend APIs (no mixed Supabase client)
+- Equipment loading issues resolved with proper API endpoint mounting
