@@ -2,7 +2,8 @@ import { supabaseAdmin } from '../config/supabase.js';
 
 export const requireAuth = async (req, res, next) => {
     try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
+        // Try cookie first, then fallback to Authorization header for backward compatibility
+        const token = req.cookies.session_token || req.headers.authorization?.replace('Bearer ', '');
         
         if (!token) {
             return res.status(401).json({ error: 'No authorization token provided' });
@@ -35,7 +36,8 @@ export const requireAuth = async (req, res, next) => {
 
 export const optionalAuth = async (req, res, next) => {
     try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
+        // Try cookie first, then fallback to Authorization header for backward compatibility
+        const token = req.cookies.session_token || req.headers.authorization?.replace('Bearer ', '');
         
         if (!token) {
             req.user = null;
@@ -70,7 +72,8 @@ export const optionalAuth = async (req, res, next) => {
 
 export const requireAdmin = async (req, res, next) => {
     try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
+        // Try cookie first, then fallback to Authorization header for backward compatibility
+        const token = req.cookies.session_token || req.headers.authorization?.replace('Bearer ', '');
         
         if (!token) {
             return res.status(401).json({ error: 'No authorization token provided' });

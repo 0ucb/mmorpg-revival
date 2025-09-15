@@ -1,0 +1,327 @@
+/* MarcoLand Revival - Core Styling */
+
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #000000;
+  color: #ffffff;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px;
+  line-height: 1.2;
+}
+
+/* Layout Structure */
+.app-container {
+  display: flex;
+  gap: 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px;
+  min-height: 100vh;
+}
+
+.game-box {
+  border: 1px solid #33FF99;
+  background-color: #000000;
+  flex-shrink: 0;
+}
+
+.left-sidebar {
+  width: 280px;
+}
+
+.main-content {
+  flex: 1;
+  position: relative;
+}
+
+.sidebar-header, .box-header {
+  background-color: #008000;
+  color: #ffffff;
+  padding: 5px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 11px;
+}
+
+.box-content {
+  padding: 8px;
+}
+
+/* Links and text styling */
+a {
+  color: #33FF99;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #006600;
+  text-decoration: underline;
+}
+
+/* Buttons */
+button {
+  background-color: #33FF99;
+  border: 1px solid #ffffff;
+  color: #000000;
+  font-family: Verdana, Arial, sans-serif;
+  font-size: 10px;
+  cursor: pointer;
+  padding: 2px 6px;
+  margin: 0 2px;
+}
+
+button:hover {
+  background-color: #00FF66;
+}
+
+button:disabled {
+  background-color: #666666;
+  color: #333333;
+  cursor: not-allowed;
+}
+
+/* Player stats section */
+.player-stats {
+  padding: 8px;
+  border-bottom: 1px solid #33FF99;
+}
+
+.player-name {
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-decoration: underline;
+}
+
+.verified-icon {
+  color: #33FF99;
+  font-size: 8px;
+}
+
+.stat-line {
+  margin-bottom: 1px;
+  white-space: nowrap;
+}
+
+/* Navigation menu */
+.nav-menu {
+  padding: 8px;
+  border-bottom: 1px solid #33FF99;
+}
+
+.nav-item {
+  display: block;
+  padding: 1px 0;
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.nav-item:hover {
+  color: #33FF99;
+}
+
+.nav-item::before {
+  content: "--> ";
+}
+
+/* Server stats */
+.server-stats {
+  padding: 8px;
+  border-bottom: 1px solid #33FF99;
+  font-size: 10px;
+}
+
+.server-stats div {
+  margin-bottom: 1px;
+}
+
+/* Help links */
+.help-links {
+  padding: 8px;
+}
+
+.help-links a {
+  display: block;
+  padding: 1px 0;
+  font-size: 10px;
+}
+
+.help-links a::before {
+  content: "- ";
+}
+
+/* Equipment specific styling */
+.equipment-section {
+  padding: 20px;
+}
+
+.equipment-header {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  color: #33FF99;
+}
+
+.equipment-slots {
+  margin-bottom: 30px;
+}
+
+.equipment-slot {
+  display: flex;
+  padding: 2px 0;
+  font-size: 11px;
+}
+
+.slot-label {
+  min-width: 120px;
+  text-align: left;
+}
+
+.slot-value {
+  color: #ffffff;
+}
+
+.equipment-stats {
+  margin-bottom: 30px;
+  padding: 10px;
+  border: 1px solid #33FF99;
+  background-color: #001100;
+}
+
+.equipment-stats div {
+  margin-bottom: 3px;
+}
+
+.inventory-header {
+  font-size: 12px;
+  font-weight: bold;
+  color: #33FF99;
+  margin-bottom: 15px;
+  text-decoration: underline;
+}
+
+.inventory-item {
+  display: flex;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #222222;
+}
+
+.item-name {
+  color: #ff0000;
+  font-weight: bold;
+  min-width: 120px;
+}
+
+.item-stats {
+  flex: 1;
+  margin-left: 15px;
+  color: #ffffff;
+}
+
+.item-actions {
+  margin-left: 15px;
+}
+
+.item-actions button {
+  margin-left: 5px;
+}
+
+/* Right sidebar specific */
+.right-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 280px;
+}
+
+/* Right sidebar box content styling */
+.game-info-content {
+  padding: 8px;
+  text-align: center;
+}
+
+.vote-section-content {
+  padding: 8px;
+  text-align: center;
+}
+
+.vote-section-content a {
+  color: #33FF99;
+  font-weight: bold;
+}
+
+.user-links-content {
+  padding: 8px;
+  text-align: center;
+  font-style: italic;
+  color: #888888;
+  font-size: 9px;
+}
+
+/* Loading and error states */
+.loading {
+  text-align: center;
+  padding: 20px;
+  color: #33FF99;
+}
+
+.error {
+  color: #ff0000;
+  text-align: center;
+  padding: 10px;
+  border: 1px solid #ff0000;
+  background-color: #330000;
+  margin: 10px;
+}
+
+/* MarcoLand logo styling for center */
+.marcoland-logo {
+  text-align: center;
+  padding: 20px;
+  background: url('https://web.archive.org/web/20080330194024im_/http://marcoland.tiipsi.com/images/background.jpg') no-repeat center top;
+  background-size: cover;
+  min-height: 200px;
+  border-bottom: 2px solid #33FF99;
+}
+
+.logo-text {
+  font-size: 24px;
+  font-weight: bold;
+  color: #33FF99;
+  text-shadow: 2px 2px 4px #000000;
+  margin-top: 60px;
+  letter-spacing: 3px;
+}
+
+.tagline {
+  font-size: 12px;
+  color: #ffffff;
+  margin-top: 10px;
+}
+
+/* Responsive considerations */
+@media (max-width: 1200px) {
+  .left-sidebar {
+    width: 250px;
+  }
+  
+  .right-sidebar {
+    width: 250px;
+  }
+}
+
+@media (max-width: 1000px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .left-sidebar, .right-sidebar {
+    width: 100%;
+  }
+}

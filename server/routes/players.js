@@ -1,7 +1,82 @@
 import express from 'express';
-import { supabase } from '../index.js';
+import { supabaseAdmin } from '../config/supabase.js';
 
 const router = express.Router();
+
+// Get current authenticated player info
+router.get('/me', async (req, res) => {
+    try {
+        const token = req.cookies.session_token;
+        
+        if (!token) {
+            return res.status(401).json({ error: 'No active session' });
+        }
+
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+        
+        if (authError || !user) {
+            return res.status(401).json({ error: 'Invalid session' });
+        }
+
+        const { data: player, error } = await supabaseAdmin
+            .from('players')
+            .select('*')
+            .eq('id', user.id)
+            .single();
+
+        if (error) {
+            console.error('Error fetching player:', error);
+            return res.status(500).json({ error: 'Failed to fetch player data' });
+        }
+
+        if (!player) {
+            return res.status(404).json({ error: 'Player not found' });
+        }
+
+        res.json(player);
+    } catch (error) {
+        console.error('Player me error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get current authenticated player stats
+router.get('/me/stats', async (req, res) => {
+    try {
+        const token = req.cookies.session_token;
+        
+        if (!token) {
+            return res.status(401).json({ error: 'No active session' });
+        }
+
+        const { data: { user }, error: authError } = await supabaseAdmin.auth.getUser(token);
+        
+        if (authError || !user) {
+            return res.status(401).json({ error: 'Invalid session' });
+        }
+
+        const { data: stats, error } = await supabaseAdmin
+            .from('player_stats')
+            .select('*')
+            .eq('player_id', user.id)
+            .single();
+
+        if (error) {
+            console.error('Error fetching player stats:', error);
+            return res.status(500).json({ error: 'Failed to fetch player stats' });
+        }
+
+        res.json(stats || {
+            strength: 10,
+            speed: 10,
+            intelligence: 10,
+            stat_points: 0
+        });
+    } catch (error) {
+        console.error('Player stats error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 
 // Get player profile by username
 router.get('/:username', async (req, res) => {

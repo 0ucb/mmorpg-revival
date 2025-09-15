@@ -292,4 +292,59 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
     }
 });
 
+// POST /api/equipment/sell - Sell equipment from inventory
+router.post('/sell', requireAuth, async (req, res) => {
+    try {
+        const { inventory_id } = req.body;
+        const playerId = req.player.id;
+
+        // Validate input
+        if (!inventory_id) {
+            return res.status(400).json({ error: 'Inventory ID is required' });
+        }
+
+        // Get player's current gold before selling
+        const { data: player, error: playerError } = await supabaseAdmin
+            .from('players')
+            .select('gold')
+            .eq('id', playerId)
+            .single();
+
+        if (playerError || !player) {
+            return res.status(500).json({ error: 'Failed to load player data' });
+        }
+
+        // Use database function for atomic sell operation
+        const { data, error } = await supabaseAdmin.rpc('sell_equipment', {
+            p_player_id: playerId,
+            p_inventory_id: inventory_id
+        });
+
+        if (error) {
+            console.error('Sell error:', error);
+            return res.status(500).json({ error: 'Sell failed due to server error' });
+        }
+
+        if (!data || !data.success) {
+            return res.status(400).json({ 
+                error: data?.error || 'Failed to sell item',
+                details: data
+            });
+        }
+
+        res.json({
+            success: true,
+            gold_earned: data.gold_earned,
+            item_name: data.item_name,
+            original_cost: data.original_cost,
+            new_gold_balance: player.gold + data.gold_earned,
+            message: `Sold ${data.item_name} for ${data.gold_earned} gold`
+        });
+
+    } catch (error) {
+        console.error('Error during sell operation:', error);
+        res.status(500).json({ error: 'Internal server error during sell operation' });
+    }
+});
+
 export default router;

@@ -1,10 +1,12 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.js';
 import beachRoutes from './routes/beach.js';
 import templeRoutes from './routes/temple.js';
 import equipmentRoutes from './routes/equipment.js';
+import playersRoutes from './routes/players.js';
 import { manaRegenerationService } from './services/manaRegeneration.js';
 
 dotenv.config();
@@ -13,7 +15,13 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:3001', 'http://127.0.0.1:3001'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.static('public'));
 
@@ -23,11 +31,31 @@ app.use((req, res, next) => {
     next();
 });
 
+// Root endpoint
+app.get('/', (req, res) => {
+    res.json({
+        message: 'MarcoLand Revival API Server',
+        version: '1.0.0',
+        status: 'running',
+        endpoints: {
+            docs: '/api/docs',
+            health: '/api/health',
+            auth: '/api/auth/*',
+            game: {
+                beach: '/api/beach',
+                temple: '/api/temple', 
+                equipment: '/api/equipment'
+            }
+        }
+    });
+});
+
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/beach', beachRoutes);
 app.use('/api/temple', templeRoutes);
 app.use('/api/equipment', equipmentRoutes);
+app.use('/api/players', playersRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -60,6 +88,7 @@ app.get('/api/docs', (req, res) => {
             equipment: {
                 'GET /api/equipment/shop': 'View available equipment for purchase (query: type=all/weapons/armor)',
                 'POST /api/equipment/purchase': 'Buy equipment with gold validation',
+                'POST /api/equipment/sell': 'Sell unequipped items back to shop for 50% of original cost',
                 'GET /api/equipment/inventory': 'View player\'s equipped items and inventory',
                 'POST /api/equipment/slot/:slot': 'Equip/unequip items in specific slots (weapon/head/body/legs/hands/feet)'
             },

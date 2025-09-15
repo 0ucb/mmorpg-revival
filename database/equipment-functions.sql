@@ -343,3 +343,58 @@ BEGIN
     RETURN jsonb_build_object('success', true, 'message', 'Item unequipped successfully');
 END;
 $$ LANGUAGE plpgsql;
+
+-- Function to sell equipment back to shop
+CREATE OR REPLACE FUNCTION sell_equipment(
+    p_player_id UUID,
+    p_inventory_id UUID
+) RETURNS JSONB AS $$
+DECLARE
+    v_inventory_record RECORD;
+    v_item_name VARCHAR;
+    v_original_cost INTEGER;
+    v_sell_price INTEGER;
+BEGIN
+    -- Get item from inventory (with row lock for atomic operation)
+    SELECT * INTO v_inventory_record 
+    FROM player_inventory 
+    WHERE id = p_inventory_id AND player_id = p_player_id
+    FOR UPDATE;
+    
+    IF NOT FOUND THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Item not found in inventory');
+    END IF;
+    
+    -- Get item details and calculate sell price (50% of original cost)
+    IF v_inventory_record.weapon_id IS NOT NULL THEN
+        SELECT name, cost_gold INTO v_item_name, v_original_cost 
+        FROM weapons WHERE id = v_inventory_record.weapon_id;
+    ELSIF v_inventory_record.armor_id IS NOT NULL THEN
+        SELECT name, cost_gold INTO v_item_name, v_original_cost 
+        FROM armor WHERE id = v_inventory_record.armor_id;
+    ELSE
+        RETURN jsonb_build_object('success', false, 'error', 'Invalid inventory item');
+    END IF;
+    
+    IF NOT FOUND THEN
+        RETURN jsonb_build_object('success', false, 'error', 'Item details not found');
+    END IF;
+    
+    -- Calculate sell price (50% of original cost, minimum 1 gold)
+    v_sell_price := GREATEST(1, FLOOR(v_original_cost * 0.5));
+    
+    -- Update player gold (with row lock for atomic operation)
+    UPDATE players SET gold = gold + v_sell_price 
+    WHERE id = p_player_id;
+    
+    -- Remove item from inventory
+    DELETE FROM player_inventory WHERE id = p_inventory_id;
+    
+    RETURN jsonb_build_object(
+        'success', true, 
+        'gold_earned', v_sell_price,
+        'item_name', v_item_name,
+        'original_cost', v_original_cost
+    );
+END;
+$$ LANGUAGE plpgsql;

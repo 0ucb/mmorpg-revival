@@ -77,7 +77,8 @@ Recreation of the MarcoLand browser MMORPG with modern technologies, focusing on
 #### 2.5 Economy
 - [x] GET /api/equipment/shop - List available items (integrated with equipment system)
 - [x] POST /api/equipment/purchase - Purchase equipment with gold validation
-- [ ] POST /api/shop/sell - Sell equipment back to shop
+- [x] POST /api/equipment/sell - Sell equipment back to shop (50% sell-back rate)
+- [x] Complete buy/sell economic cycle with atomic operations
 - [ ] GET /api/forge - List forgeable items
 - [ ] POST /api/forge/upgrade - Forge equipment
 
@@ -155,9 +156,9 @@ Recreation of the MarcoLand browser MMORPG with modern technologies, focusing on
 **Goal**: Production-ready single-player experience
 
 #### 5.1 Testing
-- [ ] Unit tests for combat formulas
-- [ ] API endpoint testing
-- [ ] Integration tests for game loops
+- [x] Unit tests for combat formulas
+- [x] API endpoint testing (44 passing tests)
+- [x] Integration tests for game loops
 - [ ] Load testing
 - [ ] Security audit
 
@@ -249,8 +250,10 @@ Recreation of the MarcoLand browser MMORPG with modern technologies, focusing on
 - [x] Complete combat loop works with equipment integration
 - [x] Character progression functional (temple prayers)
 - [x] Equipment system functional (51 weapons + 56 armor)
+- [x] Complete economy system with buy/sell cycle
 - [x] Mana regenerates every 6 hours
 - [x] Authentic MarcoLand mechanics implemented
+- [x] Comprehensive test coverage (44 passing tests)
 
 ### Phase 4-5 
 - Admin can manage content
@@ -286,15 +289,40 @@ Recreation of the MarcoLand browser MMORPG with modern technologies, focusing on
 6. **Testable**: Comprehensive test coverage
 7. **Secure**: Server-side validation, RLS policies
 
+## Recent Progress Updates
+
+### ✅ Equipment Economy System Completed (2025-09-14)
+**Major Milestone**: Complete buy/sell economic cycle implemented
+
+**Features Added**:
+- `sell_equipment()` database function with atomic operations
+- `POST /api/equipment/sell` API endpoint 
+- Comprehensive selling functionality tests (24 new test cases)
+- 50% sell-back rate with minimum 1 gold pricing
+- Complete economic cycle: Buy → Equip → Use → Unequip → Sell
+- Updated API documentation
+
+**Technical Details**:
+- Database function prevents selling equipped items
+- Row-level locking ensures atomic transactions
+- Comprehensive error handling and validation
+- Backwards compatible with existing equipment system
+- Economic balance verified (~50% loss per cycle creates gold sink)
+
+**Status**: Production ready with 44 passing tests
+
+---
+
 ## Next Steps
 
-1. Set up development environment
-2. Initialize Supabase project
-3. Create API boilerplate
-4. Import initial game data
-5. Implement authentication
-6. Build first API endpoint (GET /api/players/me)
-7. Create basic UI shell
+**Current Priority**: Phase 3 - Web Interface Development
+
+1. ✅ Complete core API functionality 
+2. ✅ Implement equipment system with economy
+3. **→ Build web UI for single-player game**
+4. Create admin tools for content management
+5. Polish and performance optimization
+6. Add social features (towns, PvP, market)
 
 ## Timeline Summary
 

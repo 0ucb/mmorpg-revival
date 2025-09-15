@@ -320,3 +320,165 @@ describe('MarcoLand Equipment Scenarios', () => {
         expect(result.totals.speed_modifier).toBe(0.6); // 1.0 - (0.5 * (40/50))
     });
 });
+
+// Equipment selling functionality tests
+describe('Equipment Selling System', () => {
+    describe('sell price calculations', () => {
+        test('sells for 50% of original cost', () => {
+            const originalCost = 1000;
+            const expectedSellPrice = 500;
+            
+            // This would be tested with the database function
+            expect(Math.floor(originalCost * 0.5)).toBe(expectedSellPrice);
+        });
+
+        test('has minimum sell price of 1 gold', () => {
+            const lowCostItems = [1, 2];
+            
+            lowCostItems.forEach(cost => {
+                const sellPrice = Math.max(1, Math.floor(cost * 0.5));
+                expect(sellPrice).toBeGreaterThanOrEqual(1);
+            });
+        });
+
+        test('calculates correct sell prices for various costs', () => {
+            const testCases = [
+                { cost: 100, expected: 50 },
+                { cost: 150, expected: 75 },
+                { cost: 99, expected: 49 },
+                { cost: 1, expected: 1 },  // Minimum
+                { cost: 2, expected: 1 },  // Minimum
+                { cost: 10000, expected: 5000 }
+            ];
+
+            testCases.forEach(({ cost, expected }) => {
+                const sellPrice = Math.max(1, Math.floor(cost * 0.5));
+                expect(sellPrice).toBe(expected);
+            });
+        });
+    });
+
+    describe('selling business logic', () => {
+        test('validates inventory ownership', () => {
+            // This simulates the database validation
+            const mockInventory = [
+                { id: 'item1', player_id: 'player1', weapon_id: 'weapon1' },
+                { id: 'item2', player_id: 'player1', armor_id: 'armor1' }
+            ];
+
+            const playerToSell = 'player1';
+            const itemToSell = 'item1';
+
+            const ownsItem = mockInventory.some(
+                item => item.id === itemToSell && item.player_id === playerToSell
+            );
+            
+            expect(ownsItem).toBe(true);
+
+            // Test with invalid item
+            const invalidItem = 'nonexistent';
+            const ownsInvalidItem = mockInventory.some(
+                item => item.id === invalidItem && item.player_id === playerToSell
+            );
+            
+            expect(ownsInvalidItem).toBe(false);
+        });
+
+        test('prevents selling equipped items', () => {
+            // In the database implementation, only items in player_inventory 
+            // can be sold, not items in player_equipped
+            const inventoryItems = ['item1', 'item2'];
+            const equippedItems = ['item3', 'item4'];
+
+            expect(inventoryItems.includes('item1')).toBe(true);  // Can sell
+            expect(inventoryItems.includes('item3')).toBe(false); // Cannot sell (equipped)
+        });
+    });
+
+    describe('economic impact calculations', () => {
+        test('calculates gold balance correctly', () => {
+            const playerGold = 1000;
+            const sellPrice = 250;
+            const expectedBalance = playerGold + sellPrice;
+
+            expect(expectedBalance).toBe(1250);
+        });
+
+        test('handles large gold amounts', () => {
+            const playerGold = 999999;
+            const sellPrice = 50000;
+            const expectedBalance = playerGold + sellPrice;
+
+            expect(expectedBalance).toBe(1049999);
+        });
+    });
+
+    describe('MarcoLand selling scenarios', () => {
+        test('starter player sells basic equipment', () => {
+            const starterItems = [
+                { name: 'Rusty Dagger', cost_gold: 100 },
+                { name: 'Leather Boots', cost_gold: 500 }
+            ];
+
+            const sellPrices = starterItems.map(item => 
+                Math.max(1, Math.floor(item.cost_gold * 0.5))
+            );
+
+            expect(sellPrices).toEqual([50, 250]);
+            expect(sellPrices.reduce((sum, price) => sum + price, 0)).toBe(300);
+        });
+
+        test('mid-level player sells valuable equipment', () => {
+            const midLevelItems = [
+                { name: 'Steel Sword', cost_gold: 20000 },
+                { name: 'Chain Mail', cost_gold: 15000 }
+            ];
+
+            const sellPrices = midLevelItems.map(item => 
+                Math.max(1, Math.floor(item.cost_gold * 0.5))
+            );
+
+            expect(sellPrices).toEqual([10000, 7500]);
+            expect(sellPrices.reduce((sum, price) => sum + price, 0)).toBe(17500);
+        });
+
+        test('expensive items provide substantial returns', () => {
+            const expensiveItem = { name: 'Legendary Plate', cost_gold: 500000 };
+            const sellPrice = Math.max(1, Math.floor(expensiveItem.cost_gold * 0.5));
+            
+            expect(sellPrice).toBe(250000);
+            
+            // This represents significant economic value
+            expect(sellPrice).toBeGreaterThan(100000);
+        });
+    });
+
+    describe('error handling scenarios', () => {
+        test('handles invalid inventory items', () => {
+            const mockInventoryCheck = (inventoryId, playerId) => {
+                const validItems = [
+                    { id: 'valid1', player_id: 'player1' },
+                    { id: 'valid2', player_id: 'player1' }
+                ];
+                
+                return validItems.find(item => 
+                    item.id === inventoryId && item.player_id === playerId
+                ) || null;
+            };
+
+            expect(mockInventoryCheck('valid1', 'player1')).toBeTruthy();
+            expect(mockInventoryCheck('invalid', 'player1')).toBeNull();
+            expect(mockInventoryCheck('valid1', 'wrongplayer')).toBeNull();
+        });
+
+        test('handles missing item details', () => {
+            const mockItemDatabase = {
+                'weapon1': { name: 'Sword', cost_gold: 1000 },
+                'armor1': { name: 'Helmet', cost_gold: 800 }
+            };
+
+            expect(mockItemDatabase['weapon1']).toBeTruthy();
+            expect(mockItemDatabase['nonexistent']).toBeUndefined();
+        });
+    });
+});

@@ -3,6 +3,36 @@ import { supabaseAdmin } from '../config/supabase.js';
 
 const router = express.Router();
 
+// Standardized error response
+const sendError = (res, status, message, details = null) => {
+    const response = { error: message };
+    if (details && process.env.NODE_ENV === 'development') {
+        response.details = details;
+    }
+    return res.status(status).json(response);
+};
+
+// Set httpOnly session cookie
+const setSessionCookie = (res, session) => {
+    if (session?.access_token) {
+        res.cookie('session_token', session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+        });
+    }
+};
+
+// Clear session cookie
+const clearSessionCookie = (res) => {
+    res.clearCookie('session_token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+    });
+};
+
 router.post('/register', async (req, res) => {
     try {
         const { email, password, username, characterClass = 'warrior' } = req.body;
@@ -77,14 +107,6 @@ router.post('/register', async (req, res) => {
             console.error('Stats creation error:', statsError);
         }
 
-        const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.admin.generateLink({
-            type: 'magiclink',
-            email: email,
-            options: {
-                redirectTo: `${process.env.CLIENT_URL || 'http://localhost:3000'}/game`
-            }
-        });
-
         res.json({
             success: true,
             user: authData.user,
@@ -93,7 +115,7 @@ router.post('/register', async (req, res) => {
         });
     } catch (error) {
         console.error('Registration error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        sendError(res, 500, 'Internal server error');
     }
 });
 
@@ -111,7 +133,7 @@ router.post('/login', async (req, res) => {
         });
 
         if (error) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+            return sendError(res, 401, 'Invalid credentials');
         }
 
         const { data: player } = await supabaseAdmin
@@ -120,51 +142,54 @@ router.post('/login', async (req, res) => {
             .eq('id', data.user.id)
             .single();
 
+        // Set httpOnly cookie for session
+        setSessionCookie(res, data.session);
+
         res.json({
             success: true,
-            session: data.session,
             user: data.user,
-            player
+            player,
+            session: { user: data.user } // Don't expose token in response
         });
     } catch (error) {
         console.error('Login error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        sendError(res, 500, 'Internal server error');
     }
 });
 
 router.post('/logout', async (req, res) => {
     try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
+        const token = req.cookies.session_token;
         
-        if (!token) {
-            return res.status(401).json({ error: 'No session' });
+        if (token) {
+            const { error } = await supabaseAdmin.auth.admin.signOut(token);
+            if (error) {
+                console.error('Logout error:', error);
+            }
         }
 
-        const { error } = await supabaseAdmin.auth.admin.signOut(token);
-        
-        if (error) {
-            console.error('Logout error:', error);
-        }
-
+        clearSessionCookie(res);
         res.json({ success: true });
     } catch (error) {
         console.error('Logout error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        clearSessionCookie(res);
+        sendError(res, 500, 'Internal server error');
     }
 });
 
 router.get('/session', async (req, res) => {
     try {
-        const token = req.headers.authorization?.replace('Bearer ', '');
+        const token = req.cookies.session_token;
         
         if (!token) {
-            return res.status(401).json({ error: 'No authorization token' });
+            return sendError(res, 401, 'No active session');
         }
 
         const { data: { user }, error } = await supabaseAdmin.auth.getUser(token);
         
         if (error || !user) {
-            return res.status(401).json({ error: 'Invalid session' });
+            clearSessionCookie(res);
+            return sendError(res, 401, 'Invalid session');
         }
 
         const { data: player } = await supabaseAdmin
@@ -175,11 +200,39 @@ router.get('/session', async (req, res) => {
 
         res.json({
             user,
-            player
+            player,
+            session: { user }
         });
     } catch (error) {
         console.error('Session error:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        sendError(res, 500, 'Internal server error');
+    }
+});
+
+router.post('/reset-password', async (req, res) => {
+    try {
+        const { email } = req.body;
+        
+        if (!email) {
+            return sendError(res, 400, 'Email is required');
+        }
+
+        const { data, error } = await supabaseAdmin.auth.admin.resetPasswordForEmail(email, {
+            redirectTo: `${process.env.CLIENT_URL || 'http://localhost:3001'}/reset-password`
+        });
+
+        if (error) {
+            console.error('Reset password error:', error);
+            return sendError(res, 400, 'Failed to send reset email');
+        }
+
+        res.json({
+            success: true,
+            message: 'Password reset email sent'
+        });
+    } catch (error) {
+        console.error('Reset password error:', error);
+        sendError(res, 500, 'Internal server error');
     }
 });
 

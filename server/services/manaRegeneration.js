@@ -30,16 +30,17 @@ class ManaRegenerationService {
             });
 
             if (updates.length > 0) {
-                const batchSize = 100;
-                for (let i = 0; i < updates.length; i += batchSize) {
-                    const batch = updates.slice(i, i + batchSize);
-                    
+                for (const update of updates) {
                     const { error: updateError } = await supabaseAdmin
                         .from('players')
-                        .upsert(batch, { onConflict: 'id' });
+                        .update({
+                            mana: update.mana,
+                            max_mana: update.max_mana
+                        })
+                        .eq('id', update.id);
                     
                     if (updateError) {
-                        console.error('Error updating mana batch:', updateError);
+                        console.error(`Error updating mana for player ${update.id}:`, updateError);
                     }
                 }
                 
