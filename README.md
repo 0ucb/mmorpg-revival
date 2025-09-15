@@ -8,34 +8,31 @@ MarcoLand was a text-based, asynchronous MMORPG where players could battle monst
 
 ## Current Status
 
-🚧 **In Active Development** - Foundation Complete
+🎮 **Playable Single-Player Game** - Phase 3 Ready
 
 ### ✅ Implemented Features
-- **Authentication System**: Email/password and OAuth (Google, Discord, GitHub)
-- **Character Creation**: Automatic character setup with starting stats
+- **Complete Authentication System**: Secure email/password with httpOnly cookies
+- **React Frontend Interface**: Full web UI for single-player gameplay
+- **Character Creation & Progression**: Automatic setup with authentic MarcoLand mechanics
 - **Beach Combat System**: Fight 30 monsters (Goblin to Nazgul) with turn-based combat
-- **Temple Prayer System**: Convert mana to stat points (Strength/Speed/Intelligence)
-- **Equipment System**: Complete equipment system with 51 weapons + 56 armor pieces
-  - Equipment shop API (browse, purchase, equip/unequip)
+- **Temple Prayer System**: Convert mana to stat points (Strength/Speed/Intelligence) 
+- **Complete Equipment System**: 51 weapons + 56 armor pieces with full economic cycle
+  - Equipment shop with purchase/sell functionality (50% sell-back rate)
   - Authentic encumbrance and speed modifier mechanics
   - Combat integration (weapon damage, armor protection)
-  - Atomic database operations prevent corruption
+  - Complete inventory management (equip/unequip/sell)
 - **Level Progression**: Automatic level-ups, XP calculation, stat point rewards
 - **Mana Regeneration**: 6-hour cycle resource system
-- **Database Security**: Complete RLS policies for all tables
-- **API Foundation**: RESTful endpoints with JWT authentication
-- **Game Configuration**: All authentic formulas and mechanics from original game
+- **Database Security**: Complete RLS policies and atomic operations
+- **Production-Ready**: 44 passing tests, comprehensive error handling
 
-### 🔄 In Progress
-- **Shop System**: Web interface for equipment purchases
+### 🎯 Current Focus
+- **Web Interface Polish**: Completing the single-player experience
 
-### 📋 Planned Features
-- **Web Interface**: Complete frontend for all game systems
+### 📋 Planned Features (Phase 4+)
+- **Social Features**: Towns, guilds, player-to-player interaction
 - **PvP Combat**: Fight other players with intelligence modifiers
-- **Quests**: Missions for experience and rewards
-- **Towns**: Guild system for group play
-- **Trading**: Player-to-player marketplace
-- **Town Wars**: Large-scale PvP battles
+- **Advanced Systems**: Quests, trading marketplace, town wars
 
 ## Quick Start
 
@@ -52,12 +49,19 @@ git clone https://github.com/0ucb/mmorpg-revival.git
 cd mmorpg-revival
 ```
 
-2. Install dependencies:
+2. Install backend dependencies:
 ```bash
 npm install
 ```
 
-3. Set up environment variables:
+3. Install frontend dependencies:
+```bash
+cd client
+npm install
+cd ..
+```
+
+4. Set up environment variables:
 ```bash
 cp .env.example .env
 ```
@@ -70,7 +74,7 @@ SUPABASE_SERVICE_KEY=your_supabase_service_key
 PORT=3000
 ```
 
-4. Set up the database:
+5. Set up the database:
    - Go to your Supabase dashboard
    - Navigate to SQL Editor
    - Run the scripts in order:
@@ -78,56 +82,93 @@ PORT=3000
      2. `/database/api-functions.sql`
      3. `/database/system-tables.sql`
      4. `/database/rls-policies.sql`
-   
-5. Configure OAuth providers (optional):
-   - In Supabase Dashboard → Authentication → Providers
-   - Enable Google, Discord, and/or GitHub
-   - Set redirect URL to `http://localhost:3000/auth/callback`
 
-6. Start the development server:
-```bash
-npm run dev
-```
-
-7. Seed game data:
+6. Seed game data:
 ```bash
 node database/seeders/monsters.js     # Load monster data
 node database/seeders/equipment.js    # Load 51 weapons + 56 armor pieces
 ```
 
-8. Test the game:
-   - Open `http://localhost:3000/test-auth.html`
-   - Register a new account and get auth token
-   - Use token to test combat: `curl -H "Authorization: Bearer YOUR_TOKEN" http://localhost:3000/api/beach/monsters`
+### Running the Game
+
+**Option 1: Use the convenient batch files (Windows)**
+1. **Start Backend**: Double-click `start.bat` 
+2. **Start Frontend**: Double-click `client/start-client.bat`
+3. **Play**: Visit `http://localhost:3001` in your browser
+
+**Option 2: Manual start**
+1. **Backend**: 
+   ```bash
+   npm run dev  # Starts on http://localhost:3000
+   ```
+2. **Frontend** (in separate terminal):
+   ```bash
+   cd client
+   npm run dev  # Starts on http://localhost:3001
+   ```
+3. **Play**: Visit `http://localhost:3001` in your browser
+
+### First Time Setup
+1. Register a new account using the web interface
+2. Your character will be automatically created with starting stats
+3. Begin playing! Fight monsters, pray for stats, buy equipment
 
 ## Project Structure
 
 ```
 mmorpg-revival/
-├── client/           # Frontend files
-├── server/           # Backend API server
-│   ├── routes/       # API route handlers
-│   └── index.js      # Main server file
-├── database/         # Database schemas and migrations
-├── scraper/          # Wayback Machine scraper tools
-├── scraped-data/     # Data recovered from original game
-│   ├── wiki/         # Game documentation and formulas
-│   ├── html/         # Original HTML pages
-│   └── game-logic/   # Extracted game mechanics
-├── public/           # Static assets
-│   ├── assets/       # Images, sprites
-│   ├── css/          # Stylesheets
-│   └── js/           # Client-side JavaScript
-└── CLAUDE.md         # AI assistant context
-
+├── client/                    # React Frontend (port 3001)
+│   ├── src/
+│   │   ├── components/        # React components
+│   │   ├── contexts/          # Authentication context
+│   │   ├── api/               # API client utilities
+│   │   └── styles/            # CSS styling
+│   ├── start-client.bat       # Frontend startup script
+│   └── package.json
+├── server/                    # Backend API Server (port 3000)
+│   ├── routes/                # API route handlers
+│   ├── middleware/            # Authentication middleware  
+│   ├── config/                # Game configuration
+│   ├── services/              # Background services
+│   └── index.js               # Main server file
+├── database/                  # Database schemas and functions
+│   ├── migrate-to-equipment-system.sql  # Main schema
+│   ├── equipment-functions.sql          # Equipment system
+│   └── seeders/               # Game data seeders
+├── scraped-data/              # Recovered MarcoLand data
+│   ├── wiki/                  # Game documentation and formulas
+│   ├── html/                  # Original HTML pages  
+│   └── game-logic/            # Extracted game mechanics
+├── start.bat                  # Backend startup script
+└── CLAUDE.md                  # AI assistant context
 ```
 
 ## Available Scripts
 
+### Backend (Root Directory)
 ```bash
-npm run dev          # Start development server
+npm run dev          # Start backend API server (port 3000)
 npm run scrape       # Run Wayback Machine scraper
 npm run db:migrate   # Run database migrations
+npm test             # Run test suite (44 passing tests)
+```
+
+### Frontend (Client Directory)
+```bash
+cd client
+npm run dev          # Start React frontend (port 3001)
+npm run build        # Build for production
+npm run preview      # Preview production build
+```
+
+### Convenience Scripts
+```bash
+# Windows
+start.bat            # Start backend server
+client/start-client.bat  # Start frontend client
+
+# Manual (cross-platform)
+npm run dev & cd client && npm run dev
 ```
 
 ## API Documentation
@@ -155,14 +196,20 @@ The API is available at `http://localhost:3000/api/docs` when the server is runn
 #### Equipment System
 - `GET /api/equipment/shop` - Browse available equipment for purchase
 - `POST /api/equipment/purchase` - Buy equipment with gold
+- `POST /api/equipment/sell` - Sell equipment back to shop (50% value)
 - `GET /api/equipment/inventory` - View equipped items and inventory
 - `POST /api/equipment/slot/:slot` - Equip/unequip items in slots
 
-### Coming Soon
-- Web interface for all game systems
-- Equipment selling back to shop
-- Player-to-player trading system
-- PvP combat system
+#### Player Data
+- `GET /api/players/me` - Get current player information
+- `GET /api/players/me/stats` - Get current player stats
+
+### Web Interface
+- **Frontend Available**: Complete React interface at `http://localhost:3001`
+- **Authentication**: Login/register with session management
+- **Equipment Management**: Browse shop, buy/sell items, manage inventory
+- **Combat**: Fight monsters at the beach
+- **Character Development**: Pray at temple, view stats and progression
 
 ## Game Mechanics
 
@@ -195,10 +242,11 @@ See [`ARCHITECTURE_ABSTRACT.md`](./ARCHITECTURE_ABSTRACT.md) for detailed system
 
 ### Key Design Principles
 - **API-First**: Every action available via REST endpoints
-- **Stateless**: JWT authentication, no server sessions
+- **Secure Authentication**: httpOnly cookies with CORS support
+- **Modern Frontend**: React with Vite for fast development
 - **Configurable**: Game mechanics in `/server/config/game.js`
-- **Secure**: Row-level security on all database tables
-- **Clean Code**: No backwards compatibility, forward-looking only
+- **Database Security**: Row-level security and atomic operations
+- **Production Ready**: Comprehensive test coverage and error handling
 
 ## Contributing
 
@@ -239,35 +287,38 @@ For questions or issues, please open an issue on GitHub or check the `/scraped-d
 
 ## Development Roadmap
 
-### Phase 1: Foundation ✅
-- [x] Project setup and structure
-- [x] Database schema design
+### Phase 1: Foundation ✅ Complete
+- [x] Project setup and database schema
 - [x] Data recovery from Wayback Machine
-- [x] Authentication system (email/OAuth)
-- [x] Character creation
+- [x] Secure authentication system with httpOnly cookies
+- [x] Character creation and progression
 - [x] Mana regeneration service
-- [x] API foundation with JWT
+- [x] Comprehensive API foundation
 
-### Phase 2: Core Gameplay ✅
-- [x] Beach combat system (30 monsters, turn-based combat, level progression)
-- [x] Temple praying for stats (convert mana to Strength/Speed/Intelligence)
-- [x] Equipment system (51 weapons, 56 armor pieces with combat integration)
-- [ ] Equipment shop frontend interface
-- [ ] Forging system for equipment enhancement
+### Phase 2: Core Gameplay ✅ Complete
+- [x] Beach combat system (30 monsters, authentic turn-based combat)
+- [x] Temple praying system (convert mana to stats)
+- [x] Complete equipment system (51 weapons, 56 armor pieces)
+- [x] Equipment economy (buy/sell cycle with 50% sell-back)
+- [x] Full combat integration with equipment stats
 
-### Phase 3: Social Features 📋
-- [ ] Basic towns (guilds)
-- [ ] PvP combat (10 attacks/day)
-- [ ] Player marketplace
-- [ ] Chat system
-- [ ] Friends list
+### Phase 3: Web Interface ✅ Complete
+- [x] React frontend with modern UI/UX
+- [x] Authentication screens (login/register)
+- [x] Equipment management interface
+- [x] Combat and character progression screens
+- [x] Complete single-player experience
 
-### Phase 4: Advanced Systems 📋
-- [ ] Quest system
-- [ ] Town wars
-- [ ] Siege weapons
-- [ ] Legions
-- [ ] Achievements
+### Phase 4: Social Features 📋 Planned
+- [ ] Multi-player features (towns, guilds)
+- [ ] PvP combat system
+- [ ] Player marketplace and trading
+- [ ] Chat and social interactions
+
+### Phase 5: Advanced Systems 📋 Future
+- [ ] Quest system and storylines
+- [ ] Town wars and large-scale PvP
+- [ ] Advanced mechanics (forging, legions, achievements)
 
 ---
 
