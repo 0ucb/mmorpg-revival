@@ -34,7 +34,7 @@ describe('PvP Protection System', () => {
     });
 
     describe('Protection Creation', () => {
-        test('should create 1-hour protection after attack', () => {
+        test('should create 10-minute protection after attack', () => {
             const defenderId = 'defender123';
             const attackerId = 'attacker456';
             const now = new Date();
@@ -44,8 +44,8 @@ describe('PvP Protection System', () => {
             expect(protection.player_id).toBe(defenderId);
             expect(protection.last_attacker_id).toBe(attackerId);
             
-            const oneHourLater = new Date(now.getTime() + 60 * 60 * 1000);
-            expect(protection.protected_until.getTime()).toBeCloseTo(oneHourLater.getTime(), -1000);
+            const tenMinutesLater = new Date(now.getTime() + 10 * 60 * 1000);
+            expect(protection.protected_until.getTime()).toBeCloseTo(tenMinutesLater.getTime(), -1000);
         });
     });
 

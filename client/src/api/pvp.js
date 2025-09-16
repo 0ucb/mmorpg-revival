@@ -123,9 +123,17 @@ export function validateAttackTarget(target, attackerLevel) {
     if (!target) return { valid: false, reason: 'No target selected' };
     if (!target.username) return { valid: false, reason: 'Invalid target data' };
     
-    // Level range check (±25%)
+    // New player protection check
+    if (attackerLevel > 5 && target.level <= 5) {
+        return { 
+            valid: false, 
+            reason: `Cannot attack new players (level ${target.level} is protected)` 
+        };
+    }
+    
+    // Level range check (±40%)
     const levelDiff = Math.abs(attackerLevel - target.level);
-    const maxLevelDiff = Math.ceil(attackerLevel * 0.25);
+    const maxLevelDiff = Math.ceil(attackerLevel * 0.40);
     
     if (levelDiff > maxLevelDiff) {
         return { 
@@ -148,6 +156,7 @@ export function getErrorDisplayMessage(error) {
         'Insufficient PvP mana': 'You need PvP mana to attack. Wait for it to regenerate (1 per hour).',
         'Target is protected': 'This player is currently protected and cannot be attacked.',
         'Cannot attack this target': 'This target is outside your level range or otherwise invalid.',
+        'Cannot attack new players': 'Players above level 5 cannot attack new players (level 5 or lower).',
         'Target player not found': 'Player not found. They may have been deleted or changed their username.',
         'You cannot attack yourself': 'You cannot attack your own character.',
         'You must be alive to attack other players': 'You must heal before you can attack other players.',

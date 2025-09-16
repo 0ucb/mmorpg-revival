@@ -5,8 +5,8 @@ export const pvpConfig = {
     pvpManaCost: parseInt(process.env.PVP_MANA_COST || '1'),
     pvpManaMax: parseInt(process.env.PVP_MANA_MAX || '5'),
     pvpManaRegenPerHour: parseInt(process.env.PVP_MANA_REGEN || '1'),
-    levelRangePercent: parseFloat(process.env.PVP_LEVEL_RANGE || '0.25'),
-    protectionHours: parseInt(process.env.PVP_PROTECTION_HOURS || '1'),
+    levelRangePercent: parseFloat(process.env.PVP_LEVEL_RANGE || '0.40'),
+    protectionMinutes: parseInt(process.env.PVP_PROTECTION_MINUTES || '10'),
     maxResourceLossPercent: parseFloat(process.env.PVP_MAX_LOSS || '0.05'),
     attacksPerMinute: parseInt(process.env.PVP_RATE_LIMIT || '2'),
     
@@ -59,7 +59,12 @@ export function isValidPvPTarget(attacker, target) {
         return false;
     }
     
-    // Level range validation (±25%)
+    // Protect new players: players above level 5 cannot attack level 5 or lower
+    if (attacker.level > 5 && target.level <= 5) {
+        return false;
+    }
+    
+    // Level range validation (±40%)
     const levelDiff = Math.abs(attacker.level - target.level);
     const maxLevelDiff = Math.ceil(attacker.level * pvpConfig.levelRangePercent);
     
@@ -77,7 +82,7 @@ export function isPlayerProtected(protection, currentTime = new Date()) {
 }
 
 export function createProtection(defenderId, attackerId, currentTime = new Date()) {
-    const protectionDuration = pvpConfig.protectionHours * 60 * 60 * 1000;
+    const protectionDuration = pvpConfig.protectionMinutes * 60 * 1000;
     const protectedUntil = new Date(currentTime.getTime() + protectionDuration);
     
     return {

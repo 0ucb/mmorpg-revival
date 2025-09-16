@@ -2,17 +2,17 @@ import { describe, test, expect } from 'vitest';
 import { 
     simulatePvPCombat,
     calculateResourceTheft,
-    isValidPvPTarget,
-    getIntelligenceModifier
+    isValidPvPTarget
 } from '../config/pvp.js';
+import { getIntelligenceModifier } from '../config/game.js';
 
 describe('PvP Combat Calculations', () => {
     describe('Intelligence Modifier', () => {
         test('should apply correct modifier based on INT ratio', () => {
             const testCases = [
-                { attackerInt: 10, defenderInt: 10, expectedMod: 1.00 },
+                { attackerInt: 10, defenderInt: 10, expectedMod: 0.95 },
                 { attackerInt: 5, defenderInt: 10, expectedMod: 0.85 },
-                { attackerInt: 15, defenderInt: 10, expectedMod: 1.00 },
+                { attackerInt: 15, defenderInt: 10, expectedMod: 1.10 },
                 { attackerInt: 20, defenderInt: 10, expectedMod: 1.10 },
                 { attackerInt: 30, defenderInt: 10, expectedMod: 1.20 },
                 { attackerInt: 50, defenderInt: 10, expectedMod: 1.40 }
@@ -131,18 +131,18 @@ describe('PvP Combat Calculations', () => {
     });
 
     describe('Target Validation', () => {
-        test('should validate level range ±25%', () => {
-            const attacker = { level: 10 };
+        test('should validate level range ±40%', () => {
+            const attacker = { level: 10, id: 'attacker1' };
             
             const validTargets = [
-                { level: 8 },  // -20%
-                { level: 10 }, // Same level
-                { level: 12 }  // +20%
+                { level: 6, id: 'target1' },  // -40%
+                { level: 10, id: 'target2' }, // Same level
+                { level: 14, id: 'target3' }  // +40%
             ];
             
             const invalidTargets = [
-                { level: 5 },  // -50%
-                { level: 20 }  // +100%
+                { level: 5, id: 'target4' },  // -50% AND protected (new player protection)
+                { level: 16, id: 'target5' }  // +60%
             ];
             
             validTargets.forEach(target => {
@@ -155,17 +155,40 @@ describe('PvP Combat Calculations', () => {
         });
 
         test('should handle edge cases for level range', () => {
-            const level1Attacker = { level: 1 };
-            const level1Target = { level: 1 };
+            const level1Attacker = { level: 1, id: 'low1' };
+            const level1Target = { level: 1, id: 'low2' };
             
             expect(isValidPvPTarget(level1Attacker, level1Target)).toBe(true);
             
-            const level100Attacker = { level: 100 };
-            const level75Target = { level: 75 };   // 25% below
-            const level125Target = { level: 125 }; // 25% above
+            const level100Attacker = { level: 100, id: 'high1' };
+            const level60Target = { level: 60, id: 'high2' };   // 40% below
+            const level140Target = { level: 140, id: 'high3' }; // 40% above
             
-            expect(isValidPvPTarget(level100Attacker, level75Target)).toBe(true);
-            expect(isValidPvPTarget(level100Attacker, level125Target)).toBe(true);
+            expect(isValidPvPTarget(level100Attacker, level60Target)).toBe(true);
+            expect(isValidPvPTarget(level100Attacker, level140Target)).toBe(true);
+        });
+
+        test('should protect new players (level 5 or lower)', () => {
+            // High level players cannot attack level 5 or lower
+            const highLevelAttacker = { level: 10, id: 'attacker1' };
+            const newPlayer = { level: 5, id: 'newbie1' };
+            const veryNewPlayer = { level: 1, id: 'newbie2' };
+            
+            expect(isValidPvPTarget(highLevelAttacker, newPlayer)).toBe(false);
+            expect(isValidPvPTarget(highLevelAttacker, veryNewPlayer)).toBe(false);
+            
+            // But new players can attack each other (within level range)
+            const level5Attacker = { level: 5, id: 'newbie3' };
+            const level3Target = { level: 3, id: 'newbie4' };  // Within level 5's ±40% range
+            
+            expect(isValidPvPTarget(level5Attacker, level3Target)).toBe(true);
+            expect(isValidPvPTarget(level3Target, level5Attacker)).toBe(true);
+            
+            // And level 6+ players can attack each other normally
+            const level6Attacker = { level: 6, id: 'mid1' };
+            const level6Target = { level: 6, id: 'mid2' };
+            
+            expect(isValidPvPTarget(level6Attacker, level6Target)).toBe(true);
         });
     });
 });

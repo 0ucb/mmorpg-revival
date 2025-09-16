@@ -144,7 +144,10 @@ router.post('/attack/:username', requireAuth, pvpLimiter, async (req, res) => {
                 const minutes = Math.ceil(timeRemaining / (60 * 1000));
                 return sendError(res, 400, `Target is protected for ${minutes} more minutes`);
             }
-            return sendError(res, 400, 'Cannot attack this target (level range or other restriction)');
+            if (req.player.level > 5 && target.level <= 5) {
+                return sendError(res, 400, 'Cannot attack new players (level 5 or lower)');
+            }
+            return sendError(res, 400, 'Cannot attack this target (level range restriction)');
         }
         
         // Get both players' stats and equipment
@@ -259,7 +262,7 @@ router.post('/attack/:username', requireAuth, pvpLimiter, async (req, res) => {
             pvp_mana_remaining: newAttackerPvPMana,
             pvp_mana_display: formatPvPManaDisplay(newAttackerPvPMana),
             protection_given: {
-                duration_hours: pvpConfig.protectionHours,
+                duration_minutes: pvpConfig.protectionMinutes,
                 expires_at: protection.protected_until
             }
         };
