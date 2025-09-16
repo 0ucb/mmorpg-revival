@@ -11,8 +11,16 @@ const router = express.Router();
 // POST /api/temple/pray - Spend mana to gain random stat points
 router.post('/pray', requireAuth, async (req, res) => {
     try {
-        const { manaAmount } = req.body; // "5", "50", or "all"
+        const { manaAmount, stat } = req.body; // "5", "50", or "all" + stat name
         const playerId = req.player.id;
+        
+        // Validate stat parameter
+        const validStats = ['strength', 'speed', 'intelligence'];
+        if (!stat || !validStats.includes(stat)) {
+            return res.status(400).json({ 
+                error: 'Invalid stat. Must be strength, speed, or intelligence'
+            });
+        }
         
         // Validate player is alive
         if (req.player.health <= 0) {
@@ -63,18 +71,49 @@ router.post('/pray', requireAuth, async (req, res) => {
 
         const currentTotalStats = playerStats.strength + playerStats.speed + playerStats.intelligence;
         
-        // Calculate stat gains with diminishing returns
-        const statGains = calculateStatGainsWithDiminishing(currentTotalStats, manaToSpend);
+        // Calculate total stat gains with diminishing returns
+        const totalGains = calculateStatGainsWithDiminishing(currentTotalStats, manaToSpend);
+        const totalStatGain = totalGains.totalGains;
         
-        // Prepare new stat values
-        const newStats = {
-            strength: playerStats.strength + statGains.strength,
-            speed: playerStats.speed + statGains.speed,
-            intelligence: playerStats.intelligence + statGains.intelligence
+        // Focus all gains on the chosen stat (preserve decimal precision)
+        const statGains = {
+            strength: stat === 'strength' ? totalStatGain : 0,
+            speed: stat === 'speed' ? totalStatGain : 0,
+            intelligence: stat === 'intelligence' ? totalStatGain : 0
         };
+        
+        // Round to 3 decimal places for display/storage consistency
+        Object.keys(statGains).forEach(key => {
+            statGains[key] = Math.round(statGains[key] * 1000) / 1000;
+        });
+        
+        console.log('Temple prayer debug:', {
+            playerId,
+            stat,
+            manaAmount,
+            manaToSpend,
+            currentTotalStats,
+            totalStatGain,
+            statGains,
+            oldStats: {
+                strength: playerStats.strength,
+                speed: playerStats.speed,
+                intelligence: playerStats.intelligence
+            }
+        });
+        
+        // Prepare new stat values (round to 3 decimal places to avoid floating point errors)
+        const newStats = {
+            strength: Math.round((playerStats.strength + statGains.strength) * 1000) / 1000,
+            speed: Math.round((playerStats.speed + statGains.speed) * 1000) / 1000,
+            intelligence: Math.round((playerStats.intelligence + statGains.intelligence) * 1000) / 1000
+        };
+        
+        console.log('New stats after prayer:', newStats);
         
         // Use transaction-like approach: update stats first, then mana
         // If mana update fails, rollback stats
+        console.log('Updating player stats:', { playerId, newStats });
         const { error: updateStatsError } = await supabaseAdmin
             .from('player_stats')
             .update(newStats)

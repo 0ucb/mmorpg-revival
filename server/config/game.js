@@ -276,40 +276,47 @@ export function calculateStatGains(currentTotalStats, manaSpent) {
 }
 
 export function calculateStatGainsWithDiminishing(currentTotalStats, manaSpent) {
-    // For large mana amounts, account for diminishing returns as stats increase
+    // Must spend at least 5 mana to pray
     if (manaSpent < 5) {
         return { strength: 0, speed: 0, intelligence: 0, totalGains: 0 };
     }
     
-    // Round down to nearest 5 mana
-    let remaining = Math.floor(manaSpent / 5) * 5;
+    // Calculate how many 5-mana prayers we're doing
+    const prayerCount = Math.floor(manaSpent / 5);
     let totalGains = { strength: 0, speed: 0, intelligence: 0 };
     let runningTotal = currentTotalStats;
     
-    // Process in 50-mana chunks for efficiency calculations
-    while (remaining > 0) {
-        const chunk = Math.min(remaining, 50);
+    console.log(`Calculating ${prayerCount} prayers (${prayerCount * 5} mana total)`);
+    
+    // Process each 5-mana prayer individually
+    for (let i = 0; i < prayerCount; i++) {
         const efficiency = getPrayingEfficiency(runningTotal);
-        const expectedGains = (chunk / 50) * efficiency;
         
-        // Add variance for this chunk
+        // Base gain per 5-mana prayer 
+        // At 30 total stats: efficiency=3.5, so baseGain should be meaningful
+        const baseGain = efficiency * 0.5; // Each 5-mana prayer gives half the efficiency value
+        
+        // Add variance (±20%)
         const variance = 0.8 + (Math.random() * 0.4);
-        const actualGains = Math.max(0, Math.round(expectedGains * variance));
+        const prayerGain = baseGain * variance;
         
-        // Distribute this chunk's gains
-        const distributed = distributeStatsWeighted(actualGains);
+        console.log(`Prayer ${i + 1}: efficiency=${efficiency}, baseGain=${baseGain}, variance=${variance}, prayerGain=${prayerGain}`);
         
-        // Add to totals
-        Object.keys(distributed).forEach(stat => {
-            totalGains[stat] += distributed[stat];
-        });
+        // Don't distribute - we'll focus the gains in the temple route
+        // Just accumulate total gains for now
+        totalGains.totalPoints = (totalGains.totalPoints || 0) + prayerGain;
         
-        // Update running total for next chunk's efficiency calculation
-        runningTotal += actualGains;
-        remaining -= chunk;
+        // Update running total for diminishing returns on next prayer
+        runningTotal += prayerGain;
     }
     
-    // Add convenience property for total gains
-    totalGains.totalGains = totalGains.strength + totalGains.speed + totalGains.intelligence;
-    return totalGains;
+    console.log('Final total gains:', totalGains);
+    
+    // Return the accumulated total points for the temple route to distribute
+    return {
+        strength: 0,
+        speed: 0, 
+        intelligence: 0,
+        totalGains: totalGains.totalPoints || 0
+    };
 }

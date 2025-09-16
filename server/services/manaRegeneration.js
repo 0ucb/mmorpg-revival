@@ -35,7 +35,8 @@ class ManaRegenerationService {
                         .from('players')
                         .update({
                             mana: update.mana,
-                            max_mana: update.max_mana
+                            max_mana: update.max_mana,
+                            last_mana_regen: new Date().toISOString()
                         })
                         .eq('id', update.id);
                     
@@ -89,6 +90,52 @@ class ManaRegenerationService {
         return next.getTime() - Date.now();
     }
 
+    async checkMissedRegenerations() {
+        try {
+            const { data: players, error } = await supabaseAdmin
+                .from('players')
+                .select('id, level, mana, max_mana, last_mana_regen');
+            
+            if (error) {
+                console.error('Error checking missed regenerations:', error);
+                return;
+            }
+
+            const now = new Date();
+            const regenHours = gameConfig.mana.regenerationHours * 60 * 60 * 1000; // Convert to ms
+            let regeneratedCount = 0;
+
+            for (const player of players) {
+                const lastRegen = player.last_mana_regen ? new Date(player.last_mana_regen) : new Date(0);
+                const timeSinceLastRegen = now.getTime() - lastRegen.getTime();
+                
+                // If it's been more than regenHours since last regeneration, regenerate
+                if (timeSinceLastRegen >= regenHours) {
+                    const maxMana = getMaxMana(player.level);
+                    
+                    const { error: updateError } = await supabaseAdmin
+                        .from('players')
+                        .update({
+                            mana: maxMana,
+                            max_mana: maxMana,
+                            last_mana_regen: now.toISOString()
+                        })
+                        .eq('id', player.id);
+                    
+                    if (!updateError) {
+                        regeneratedCount++;
+                    }
+                }
+            }
+
+            if (regeneratedCount > 0) {
+                console.log(`Regenerated mana for ${regeneratedCount} players who missed regeneration while server was down`);
+            }
+        } catch (error) {
+            console.error('Error in checkMissedRegenerations:', error);
+        }
+    }
+
     async start() {
         if (this.isRunning) {
             console.log('Mana regeneration service already running');
@@ -96,8 +143,10 @@ class ManaRegenerationService {
         }
 
         this.isRunning = true;
+        console.log('Mana regeneration service started - checking for missed regenerations');
         
-        await this.regenerateMana();
+        // Check if we missed any regenerations while the server was down
+        await this.checkMissedRegenerations();
         
         const scheduleNextRegen = () => {
             const msUntilNext = this.getMillisecondsUntilNextRegen();

@@ -28,7 +28,7 @@ function TempleScreen() {
 
   const handlePrayer = async (stat, manaCost) => {
     if (!playerStats || playerStats.mana < manaCost) {
-      alert('Not enough mana for this prayer!');
+      console.error('Not enough mana for this prayer!');
       return;
     }
 
@@ -51,6 +51,79 @@ function TempleScreen() {
     } finally {
       setPraying(false);
     }
+  };
+
+  const getSuccessMessage = () => {
+    if (!prayerResult?.stat_gains) {
+      return 'The gods have blessed you!';
+    }
+    
+    // Find which stat was increased
+    const gains = prayerResult.stat_gains;
+    const statName = gains.strength > 0 ? 'strength' : gains.speed > 0 ? 'speed' : 'intelligence';
+    const gainAmount = gains[statName];
+    
+    return `The gods have blessed you! +${gainAmount} ${statName}`;
+  };
+
+  const renderPrayerOption = (stat, prayerText) => {
+    const currentMana = playerStats?.mana || 0;
+    const allMana = currentMana;
+    
+    return (
+      <div key={stat} style={{ 
+        margin: '8px 0', 
+        display: 'flex', 
+        alignItems: 'center', 
+        gap: '10px' 
+      }}>
+        <span style={{ 
+          color: 'white', 
+          minWidth: '200px' 
+        }}>{prayerText}</span>
+        <div style={{ 
+          display: 'flex', 
+          alignItems: 'center' 
+        }}>
+          {[5, 50].map(amount => (
+            <a
+              key={amount}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                handlePrayer(stat, amount);
+              }}
+              className={`mana-link ${currentMana < amount || praying ? 'disabled' : ''}`}
+              style={{
+                color: '#33FF99',
+                textDecoration: 'none',
+                marginRight: '8px',
+                cursor: currentMana >= amount && !praying ? 'pointer' : 'default',
+                opacity: currentMana >= amount && !praying ? 1 : 0.5
+              }}
+            >
+              [{amount}]
+            </a>
+          ))}
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              handlePrayer(stat, "all");
+            }}
+            className={`mana-link ${allMana <= 0 || praying ? 'disabled' : ''}`}
+            style={{
+              color: '#33FF99',
+              textDecoration: 'none',
+              cursor: allMana > 0 && !praying ? 'pointer' : 'default',
+              opacity: allMana > 0 && !praying ? 1 : 0.5
+            }}
+          >
+            [all]
+          </a>
+        </div>
+      </div>
+    );
   };
 
   if (loading) {
@@ -76,35 +149,15 @@ function TempleScreen() {
 
       {prayerResult && (
         <div className={`prayer-result ${prayerResult.success ? 'blessing' : 'failure'}`}>
-          <p><strong>Result:</strong> {prayerResult.success ? 'The gods have blessed you!' : 'Prayer failed!'}</p>
+          <p><strong>Result:</strong> {prayerResult.success ? getSuccessMessage() : 'Prayer failed!'}</p>
           <p>{prayerResult.message}</p>
         </div>
       )}
 
       <div className="prayer-links">
-        <button 
-          className="prayer-link"
-          onClick={() => handlePrayer('strength', 5)}
-          disabled={praying || !playerStats || playerStats.mana < 5}
-        >
-          Pray for strength.
-        </button>
-        
-        <button 
-          className="prayer-link green"
-          onClick={() => handlePrayer('speed', 5)}
-          disabled={praying || !playerStats || playerStats.mana < 5}
-        >
-          Pray for speed.
-        </button>
-        
-        <button 
-          className="prayer-link"
-          onClick={() => handlePrayer('intelligence', 5)}
-          disabled={praying || !playerStats || playerStats.mana < 5}
-        >
-          Pray for intelligence.
-        </button>
+        {renderPrayerOption('strength', 'Pray for strength.')}
+        {renderPrayerOption('speed', 'Pray for speed.')}
+        {renderPrayerOption('intelligence', 'Pray for intelligence.')}
       </div>
 
       <div className="temple-actions">

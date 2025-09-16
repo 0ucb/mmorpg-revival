@@ -59,11 +59,19 @@ export const fightMonster = async (monsterId) => {
 };
 
 export const prayAtTemple = async (stat, manaCost = 5) => {
+  // Convert manaCost to the expected string format
+  let manaAmount;
+  if (typeof manaCost === 'string') {
+    manaAmount = manaCost; // Already "all"
+  } else {
+    manaAmount = manaCost.toString(); // Convert 5, 50 to "5", "50"
+  }
+  
   return apiCall('/temple/pray', {
     method: 'POST',
     body: JSON.stringify({
       stat: stat,
-      mana_cost: manaCost
+      manaAmount: manaAmount
     })
   });
 };
