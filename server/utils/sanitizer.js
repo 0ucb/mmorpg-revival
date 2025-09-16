@@ -1,6 +1,4 @@
-import createDOMPurify from 'isomorphic-dompurify';
-
-const DOMPurify = createDOMPurify();
+import DOMPurify from 'isomorphic-dompurify';
 
 export const sanitizeInput = (input) => {
     if (input === null || input === undefined) return input;

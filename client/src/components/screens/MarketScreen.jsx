@@ -8,7 +8,7 @@ import { MarketListing } from '../market/MarketListing';
 import { SellDialog } from '../market/SellDialog';
 
 function MarketScreen() {
-  const { player, refreshPlayerData } = useAuth();
+  const { player, refreshPlayer } = useAuth();
   const [state, dispatch] = useReducer(marketReducer, marketInitialState);
   
   // Memoized filtered listings
@@ -93,11 +93,11 @@ function MarketScreen() {
       
       dispatch({ type: 'SET_SUCCESS', payload: `Purchased ${data.purchased} ${listing.item_type} for ${data.total_cost} gold!` });
       loadListings();
-      refreshPlayerData();
+      refreshPlayer();
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
     }
-  }, [loadListings, refreshPlayerData]);
+  }, [loadListings, refreshPlayer]);
 
   const createListing = useCallback(async () => {
     if (!state.sellDialog) return;
@@ -134,11 +134,11 @@ function MarketScreen() {
       dispatch({ type: 'SET_SUCCESS', payload: `Listed ${qty} ${state.sellDialog} for ${price} gold each!` });
       dispatch({ type: 'CLOSE_SELL_DIALOG' });
       loadListings();
-      refreshPlayerData();
+      refreshPlayer();
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
     }
-  }, [state.sellDialog, state.sellQuantity, state.sellPrice, loadListings, refreshPlayerData]);
+  }, [state.sellDialog, state.sellQuantity, state.sellPrice, loadListings, refreshPlayer]);
 
   const cancelListing = useCallback(async (listingId) => {
     if (!confirm('Cancel this listing and return items?')) return;
@@ -159,11 +159,11 @@ function MarketScreen() {
       
       dispatch({ type: 'SET_SUCCESS', payload: `Returned ${data.returned} ${data.item_type} to your inventory` });
       loadMyListings();
-      refreshPlayerData();
+      refreshPlayer();
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.message });
     }
-  }, [loadMyListings, refreshPlayerData]);
+  }, [loadMyListings, refreshPlayer]);
 
   const formatPrice = useCallback((price) => {
     return price.toLocaleString();

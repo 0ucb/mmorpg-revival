@@ -58,13 +58,11 @@ function GemsStoreScreen() {
 
   const handlePurchase = async (gemQuantity) => {
     if (gemQuantity <= 0 || gemQuantity > storeStatus.gems_remaining) {
-      alert(`Invalid quantity. You can buy 1-${storeStatus.gems_remaining} gems today.`);
       return;
     }
 
     const totalCost = gemQuantity * storeStatus.price_per_gem;
     if (totalCost > storeStatus.player_gold) {
-      alert(`Not enough gold! Need ${totalCost} gold, you have ${storeStatus.player_gold}.`);
       return;
     }
 
@@ -73,8 +71,6 @@ function GemsStoreScreen() {
       const result = await purchaseGems(gemQuantity);
       
       if (result.success) {
-        alert(`Successfully purchased ${result.gems_purchased} gems for ${result.total_cost} gold!`);
-        
         // Refresh player data in sidebar and reload store status
         await refreshPlayer();
         await loadStoreStatus();
@@ -82,7 +78,6 @@ function GemsStoreScreen() {
       }
     } catch (error) {
       console.error('Error purchasing gems:', error);
-      alert(`Failed to purchase gems: ${error.message}`);
     } finally {
       setPurchasing(false);
     }
