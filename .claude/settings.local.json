@@ -18,7 +18,8 @@
       "Bash(wmic process where:*)",
       "Bash(npm run dev:*)",
       "Bash(test:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(node:*)"
     ],
     "deny": []
   }
