@@ -45,7 +45,7 @@ router.get('/targets', requireAuth, async (req, res) => {
             .from('players')
             .select(`
                 id, username, level, health, max_health,
-                pvp_protection:pvp_protection(protected_until, last_attacker_id)
+                pvp_protection!pvp_protection_player_id_fkey(protected_until, last_attacker_id)
             `)
             .neq('id', attackerId) // Exclude self
             .gte('level', minLevel)
@@ -123,7 +123,7 @@ router.post('/attack/:username', requireAuth, pvpLimiter, async (req, res) => {
             .from('players')
             .select(`
                 id, username, level, health, max_health, gold, gems, metals,
-                pvp_protection:pvp_protection(protected_until, last_attacker_id)
+                pvp_protection!pvp_protection_player_id_fkey(protected_until, last_attacker_id)
             `)
             .eq('username', targetUsername)
             .single();

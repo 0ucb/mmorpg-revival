@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { 
-    refreshPvPData, 
-    attackPlayer, 
-    formatProtectionTime, 
-    getErrorDisplayMessage,
-    canPerformAttack 
-} from '../../api/pvp';
 
 function PvPScreen() {
     const { player, refreshPlayer } = useAuth();
@@ -17,27 +10,78 @@ function PvPScreen() {
     const [attacking, setAttacking] = useState(null);
     const [lastCombatResult, setLastCombatResult] = useState(null);
     const [error, setError] = useState(null);
-    const [activeTab, setActiveTab] = useState('targets'); // 'targets', 'history', 'status'
+    const [activeTab, setActiveTab] = useState('targets');
 
     useEffect(() => {
         loadPvPData();
     }, []);
 
+    const loadTargets = async () => {
+        try {
+            const response = await fetch('/api/pvp/targets', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                setTargets(data.targets || []);
+                setPvpStatus(prev => ({
+                    ...prev,
+                    pvp_mana: data.pvp_mana,
+                    pvp_mana_display: data.pvp_mana_display,
+                    can_attack: data.can_attack
+                }));
+            } else {
+                throw new Error(data.error || 'Failed to load targets');
+            }
+        } catch (error) {
+            console.error('Error loading targets:', error);
+            throw error;
+        }
+    };
+
+    const loadStatus = async () => {
+        try {
+            const response = await fetch('/api/pvp/status', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                setPvpStatus(prev => ({
+                    ...prev,
+                    ...data
+                }));
+            }
+        } catch (error) {
+            console.error('Error loading PvP status:', error);
+        }
+    };
+
+    const loadHistory = async () => {
+        try {
+            const response = await fetch('/api/pvp/history', {
+                credentials: 'include'
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                setHistory(data.battles || []);
+            }
+        } catch (error) {
+            console.error('Error loading PvP history:', error);
+        }
+    };
+
     const loadPvPData = async () => {
         try {
             setLoading(true);
-            const result = await refreshPvPData();
-            
-            setTargets(result.targets);
-            setHistory(result.history);
-            setPvpStatus(prev => ({
-                ...prev,
-                ...result.status
-            }));
-            
-            if (result.errors.length > 0) {
-                setError(getErrorDisplayMessage(result.errors[0]));
-            }
+            setError(null);
+            await Promise.all([
+                loadTargets(),
+                loadStatus(),
+                loadHistory()
+            ]);
         } catch (error) {
             console.error('Error loading PvP data:', error);
             setError('Failed to load PvP data');
@@ -53,35 +97,43 @@ function PvPScreen() {
             setAttacking(username);
             setError(null);
             
-            const result = await attackPlayer(username);
+            const response = await fetch(`/api/pvp/attack/${username}`, {
+                method: 'POST',
+                credentials: 'include'
+            });
+            const data = await response.json();
             
-            if (result.error) {
-                setError(getErrorDisplayMessage(result.error));
-            } else {
+            if (response.ok) {
                 setLastCombatResult({
-                    ...result.data.combat_result,
+                    ...data.combat_result,
                     target: username,
-                    pvp_mana_remaining: result.data.pvp_mana_remaining
+                    pvp_mana_remaining: data.pvp_mana_remaining
                 });
                 
-                // Refresh data
                 await loadPvPData();
                 await refreshPlayer();
-                
-                // Switch to status tab to show result
                 setActiveTab('status');
+            } else {
+                setError(data.error || 'Attack failed');
             }
         } catch (error) {
             console.error('Error attacking player:', error);
-            setError('An unexpected error occurred. Please try again.');
+            setError('Failed to attack player');
         } finally {
             setAttacking(null);
         }
     };
 
-    // Use the imported utility function
-    const formatTimeDisplay = (milliseconds) => {
-        return formatProtectionTime(milliseconds);
+    const formatTimeRemaining = (milliseconds) => {
+        if (!milliseconds || milliseconds <= 0) return null;
+        
+        const minutes = Math.ceil(milliseconds / (60 * 1000));
+        if (minutes < 60) {
+            return `${minutes} minutes`;
+        }
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        return `${hours}h ${remainingMinutes}m`;
     };
 
     const formatDate = (dateString) => {
@@ -117,7 +169,7 @@ function PvPScreen() {
             {/* Protection Status */}
             {pvpStatus.protection_time_remaining > 0 && (
                 <div className="protection-status">
-                    <strong>Protected for: {formatTimeDisplay(pvpStatus.protection_time_remaining)}</strong>
+                    <strong>Protected for: {formatTimeRemaining(pvpStatus.protection_time_remaining)}</strong>
                 </div>
             )}
             
@@ -225,7 +277,6 @@ function PvPScreen() {
             
             {activeTab === 'status' && (
                 <div className="status-tab">
-                    {/* Combat Result Display */}
                     {lastCombatResult && (
                         <div className="combat-result">
                             <h3>Last Combat Result</h3>
@@ -249,7 +300,6 @@ function PvPScreen() {
                         </div>
                     )}
                     
-                    {/* PvP Stats */}
                     <div className="pvp-stats">
                         <h3>PvP Statistics</h3>
                         <div className="stats-grid">

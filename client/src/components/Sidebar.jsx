@@ -75,6 +75,7 @@ function Sidebar() {
         <div className="stat-line">Experience : {playerData?.experience || 0}/{calculateExperienceNeeded(playerData?.level || 1)}</div>
         <div className="stat-line">HP : {playerData?.health || 10}/{playerData?.max_health || 10}</div>
         <div className="stat-line">Mana : {playerData?.mana || 50}/{playerData?.max_mana || 50}</div>
+        <div className="stat-line">PvP Mana : {playerData?.pvp_mana || 0}/5</div>
         <div className="stat-line">Gold : {playerData?.gold || 2900}</div>
         <div className="stat-line">Metals : {playerData?.metals || 0}</div>
         <div className="stat-line">Gems : {playerData?.gems || 10}</div>
