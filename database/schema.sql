@@ -19,6 +19,7 @@ CREATE TABLE players (
     gold INTEGER DEFAULT 100,
     metals INTEGER DEFAULT 0,
     gems INTEGER DEFAULT 0,
+    quartz INTEGER DEFAULT 0,
     location_x INTEGER DEFAULT 0,
     location_y INTEGER DEFAULT 0,
     current_map VARCHAR(50) DEFAULT 'spawn',

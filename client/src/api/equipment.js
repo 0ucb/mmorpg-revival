@@ -67,21 +67,11 @@ export const getEquipmentInventory = async () => {
   return apiCall('/equipment/inventory');
 };
 
-// Get equipment shop items
-export const getEquipmentShop = async (type = 'all') => {
-  return apiCall(`/equipment/shop?type=${type}`);
-};
-
-// Purchase equipment
-export const purchaseEquipment = async (equipmentId, type) => {
-  return apiCall('/equipment/purchase', {
-    method: 'POST',
-    body: JSON.stringify({
-      equipment_id: equipmentId,
-      type: type
-    })
-  });
-};
+// Unified equipment shop removed - use separate NPC shop APIs:
+// - Blacksmith: weapons only
+// - Armourer: armor only  
+// - Gems Store: daily gems purchasing
+// - Market: player trading (future implementation)
 
 // Sell equipment
 export const sellEquipment = async (inventoryId) => {

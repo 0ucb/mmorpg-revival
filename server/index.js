@@ -7,6 +7,11 @@ import beachRoutes from './routes/beach.js';
 import templeRoutes from './routes/temple.js';
 import equipmentRoutes from './routes/equipment.js';
 import playersRoutes from './routes/players.js';
+import blacksmithRoutes from './routes/blacksmith.js';
+import armourerRoutes from './routes/armourer.js';
+import gemsStoreRoutes from './routes/gems-store.js';
+import marketRoutes from './routes/market.js';
+import resourcesRoutes from './routes/resources.js';
 import { manaRegenerationService } from './services/manaRegeneration.js';
 
 dotenv.config();
@@ -44,7 +49,12 @@ app.get('/', (req, res) => {
             game: {
                 beach: '/api/beach',
                 temple: '/api/temple', 
-                equipment: '/api/equipment'
+                equipment: '/api/equipment',
+                blacksmith: '/api/blacksmith',
+                armourer: '/api/armourer',
+                'gems-store': '/api/gems-store',
+                market: '/api/market',
+                resources: '/api/resources'
             }
         }
     });
@@ -56,6 +66,11 @@ app.use('/api/beach', beachRoutes);
 app.use('/api/temple', templeRoutes);
 app.use('/api/equipment', equipmentRoutes);
 app.use('/api/players', playersRoutes);
+app.use('/api/blacksmith', blacksmithRoutes);
+app.use('/api/armourer', armourerRoutes);
+app.use('/api/gems-store', gemsStoreRoutes);
+app.use('/api/market', marketRoutes);
+app.use('/api/resources', resourcesRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

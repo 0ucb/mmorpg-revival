@@ -9,6 +9,11 @@ import BattleScreen from './screens/BattleScreen'
 import BeachScreen from './screens/BeachScreen'
 import CombatScreen from './screens/CombatScreen'
 import BlacksmithScreen from './screens/BlacksmithScreen'
+import ArmourerScreen from './screens/ArmourerScreen'
+import GemsStoreScreen from './screens/GemsStoreScreen'
+import MarketScreen from './screens/MarketScreen'
+import VoteScreen from './screens/VoteScreen'
+import ManaTreeScreen from './screens/ManaTreeScreen'
 import TempleScreen from './screens/TempleScreen'
 import EquipmentScreen from './screens/EquipmentScreen'
 
@@ -66,6 +71,11 @@ export const AuthWrapper = () => {
           <Route path="/beach" element={<BeachScreen />} />
           <Route path="/combat" element={<CombatScreen />} />
           <Route path="/blacksmith" element={<BlacksmithScreen />} />
+          <Route path="/armourer" element={<ArmourerScreen />} />
+          <Route path="/gems-store" element={<GemsStoreScreen />} />
+          <Route path="/market" element={<MarketScreen />} />
+          <Route path="/vote" element={<VoteScreen />} />
+          <Route path="/mana-tree" element={<ManaTreeScreen />} />
           <Route path="/temple" element={<TempleScreen />} />
           <Route path="/equipment" element={<EquipmentScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />

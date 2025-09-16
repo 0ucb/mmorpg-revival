@@ -11,22 +11,23 @@ function CityScreen() {
           <h3>In the streets</h3>
           <div className="city-links">
             <Link to="/blacksmith" className="city-link">Blacksmith</Link>
-            <a href="#" className="city-link disabled">Armourer</a>
+            <Link to="/armourer" className="city-link">Armourer</Link>
             <a href="#" className="city-link disabled">Gambler</a>
-            <a href="#" className="city-link disabled">Town gems store</a>
+            <Link to="/gems-store" className="city-link">Town gems store</Link>
             <a href="#" className="city-link disabled">Food shop</a>
-            <a href="#" className="city-link disabled">Market</a>
+            <Link to="/market" className="city-link">Market</Link>
             <a href="#" className="city-link disabled">Alchemy Shop</a>
             <a href="#" className="city-link disabled">Spell Shop</a>
           </div>
 
           <h3>Fun Zone</h3>
           <div className="city-links">
+            <Link to="/vote" className="city-link">Daily Vote</Link>
           </div>
 
           <h3>In the woods</h3>
           <div className="city-links">
-            <a href="#" className="city-link disabled">Tall tree of Mana</a>
+            <Link to="/mana-tree" className="city-link">Tall tree of Mana</Link>
             <a href="#" className="city-link disabled">Monk's Alley</a>
             <a href="#" className="city-link disabled">Reviving fruits</a>
             <a href="#" className="city-link disabled">Enchantress</a>

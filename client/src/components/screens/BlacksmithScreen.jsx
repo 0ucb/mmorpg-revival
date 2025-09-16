@@ -1,63 +1,90 @@
 import React, { useState, useEffect } from 'react';
-import { getEquipmentShop, purchaseEquipment, getPlayerInfo } from '../../api/equipment';
 import { useAuth } from '../../contexts/AuthContext';
+
+// API calls for blacksmith (weapons only)
+const getBlacksmithWeapons = async () => {
+  const response = await fetch('/api/blacksmith', {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' }
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+  
+  return response.json();
+};
+
+const purchaseWeapon = async (equipmentId) => {
+  const response = await fetch('/api/blacksmith/purchase', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ equipment_id: equipmentId })
+  });
+  
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}: ${await response.text()}`);
+  }
+  
+  return response.json();
+};
 
 function BlacksmithScreen() {
   const { refreshPlayer } = useAuth();
   const [weapons, setWeapons] = useState([]);
-  const [armor, setArmor] = useState([]);
   const [playerGold, setPlayerGold] = useState(0);
+  const [playerStrength, setPlayerStrength] = useState(0);
   const [loading, setLoading] = useState(true);
   const [purchasing, setPurchasing] = useState(false);
-  const [activeTab, setActiveTab] = useState('weapons');
 
   useEffect(() => {
-    loadShopData();
+    loadWeapons();
   }, []);
 
-  const loadShopData = async () => {
+  const loadWeapons = async () => {
     try {
       setLoading(true);
-      const [weaponData, armorData, playerData] = await Promise.all([
-        getEquipmentShop('weapons'),
-        getEquipmentShop('armor'),
-        getPlayerInfo()
-      ]);
+      const data = await getBlacksmithWeapons();
       
-      setWeapons(weaponData);
-      setArmor(armorData);
-      setPlayerGold(playerData.gold);
+      if (data.success) {
+        setWeapons(data.weapons);
+        setPlayerGold(data.player_gold);
+        setPlayerStrength(data.player_strength);
+      }
     } catch (error) {
-      console.error('Error loading shop data:', error);
+      console.error('Error loading blacksmith weapons:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePurchase = async (item, type) => {
-    if (item.cost > playerGold) {
+  const handlePurchase = async (weapon) => {
+    if (weapon.cost_gold > playerGold) {
       alert('Not enough gold!');
       return;
     }
 
-    if (item.strength_required && item.strength_required > 1) {
-      const confirmed = confirm(`This item requires ${item.strength_required} strength. Are you sure you meet the requirements?`);
+    if (!weapon.can_use) {
+      const confirmed = confirm(`This weapon requires ${weapon.strength_required} strength. You have ${playerStrength}. Purchase anyway?`);
       if (!confirmed) return;
     }
 
     try {
       setPurchasing(true);
-      await purchaseEquipment(item.id, type);
+      const result = await purchaseWeapon(weapon.id);
       
-      setPlayerGold(playerGold - item.cost);
-      alert(`Successfully purchased ${item.name}!`);
-      
-      loadShopData();
-      // Refresh player data in sidebar after purchase
-      await refreshPlayer();
+      if (result.success) {
+        setPlayerGold(result.remaining_gold);
+        alert(`Successfully purchased ${result.weapon_name}!`);
+        
+        // Refresh player data in sidebar and reload weapons
+        await refreshPlayer();
+        await loadWeapons();
+      }
     } catch (error) {
-      console.error('Error purchasing item:', error);
-      alert(`Failed to purchase item: ${error.message}`);
+      console.error('Error purchasing weapon:', error);
+      alert(`Failed to purchase weapon: ${error.message}`);
     } finally {
       setPurchasing(false);
     }
@@ -71,77 +98,45 @@ function BlacksmithScreen() {
     );
   }
 
-  const currentItems = activeTab === 'weapons' ? weapons : armor;
-
   return (
     <div className="blacksmith-screen">
-      <div className="box-header">The Blacksmith</div>
+      <div className="sidebar-header">Blacksmith</div>
       
       <div className="blacksmith-description">
-        <p>Welcome to the finest blacksmith in MarcoLand! Here you can purchase weapons and armor to improve your combat effectiveness.</p>
-        <p><strong>Your Gold:</strong> {playerGold}</p>
-      </div>
-
-      <div className="shop-tabs">
-        <button 
-          className={`tab-button ${activeTab === 'weapons' ? 'active' : ''}`}
-          onClick={() => setActiveTab('weapons')}
-        >
-          Weapons ({weapons.length})
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'armor' ? 'active' : ''}`}
-          onClick={() => setActiveTab('armor')}
-        >
-          Armor ({armor.length})
-        </button>
+        <p><strong>Your Gold:</strong> {playerGold} | <strong>Your Strength:</strong> {playerStrength}</p>
       </div>
 
       <div className="shop-inventory">
-        <div className="box-header">
-          {activeTab === 'weapons' ? 'Weapons Available' : 'Armor Available'}
-        </div>
-        
-        <div className="shop-table">
-          <div className="table-header">
-            <span>Name</span>
-            <span>{activeTab === 'weapons' ? 'Damage' : 'Defense'}</span>
-            <span>Cost</span>
-            <span>Str Req</span>
-            <span>Action</span>
-          </div>
-          
-          {currentItems.map(item => (
-            <div key={item.id} className="shop-row">
-              <span className="item-name">{item.name}</span>
-              <span className="item-stat">
-                {activeTab === 'weapons' ? item.damage || 0 : item.defense || 0}
-              </span>
-              <span className="item-cost">{item.cost}</span>
-              <span className="item-requirement">
-                {item.strength_required || 1}
-              </span>
-              <button
-                className={`marcoland-button ${item.cost > playerGold ? 'disabled' : 'buy-button'}`}
-                onClick={() => handlePurchase(item, activeTab.slice(0, -1))}
-                disabled={purchasing || item.cost > playerGold}
-              >
-                {purchasing ? 'Buying...' : 'Buy'}
-              </button>
+        <div className="weapons-list">
+          {weapons.map(weapon => (
+            <div key={weapon.id} className="weapon-row">
+              <div className="weapon-info">
+                <span className="weapon-name">{weapon.name}</span>
+                <span className="weapon-damage">
+                  {weapon.damage_min}-{weapon.damage_max} damage
+                </span>
+                <span className="weapon-cost">{weapon.cost_gold} gold</span>
+                <span className="weapon-requirement">
+                  Str: {weapon.strength_required || 1}
+                </span>
+              </div>
+              
+              <div className="weapon-actions">
+                <button
+                  className="city-link"
+                  onClick={() => handlePurchase(weapon)}
+                  disabled={purchasing || weapon.cost_gold > playerGold}
+                  style={{
+                    opacity: (purchasing || weapon.cost_gold > playerGold) ? 0.5 : 1,
+                    backgroundColor: weapon.can_use ? 'transparent' : '#444'
+                  }}
+                >
+                  {purchasing ? 'Buying...' : 'Buy'}
+                </button>
+              </div>
             </div>
           ))}
         </div>
-      </div>
-
-      <div className="blacksmith-tips">
-        <div className="box-header">Blacksmith's Advice</div>
-        <ul>
-          <li><strong>Weapons</strong> increase your damage in combat</li>
-          <li><strong>Armor</strong> increases your defense against attacks</li>
-          <li>Higher tier equipment requires more strength to use effectively</li>
-          <li>Better equipment costs more gold but provides superior protection</li>
-          <li>Visit the Temple to increase your strength for better equipment</li>
-        </ul>
       </div>
     </div>
   );
