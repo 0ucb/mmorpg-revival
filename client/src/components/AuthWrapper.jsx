@@ -16,6 +16,7 @@ import VoteScreen from './screens/VoteScreen'
 import ManaTreeScreen from './screens/ManaTreeScreen'
 import TempleScreen from './screens/TempleScreen'
 import EquipmentScreen from './screens/EquipmentScreen'
+import PvPScreen from './screens/PvPScreen'
 
 export const AuthWrapper = () => {
   const { user, loading, error } = useAuth()
@@ -78,6 +79,7 @@ export const AuthWrapper = () => {
           <Route path="/mana-tree" element={<ManaTreeScreen />} />
           <Route path="/temple" element={<TempleScreen />} />
           <Route path="/equipment" element={<EquipmentScreen />} />
+          <Route path="/pvp" element={<PvPScreen />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Layout>

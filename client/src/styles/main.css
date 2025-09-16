@@ -746,3 +746,206 @@ button:disabled {
   padding: 30px;
   color: #FF3333;
 }
+
+/* PvP Arena Styles */
+.pvp-screen {
+  padding: 10px;
+}
+
+.pvp-mana-status {
+  color: #33FF99;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+.mana-warning {
+  color: #FF9933;
+}
+
+.protection-status {
+  color: #FFD700;
+  font-size: 11px;
+  margin-bottom: 10px;
+}
+
+.pvp-tabs {
+  display: flex;
+  margin-bottom: 15px;
+  border-bottom: 1px solid #33FF99;
+}
+
+.tab-button {
+  background: none;
+  border: none;
+  color: #33FF99;
+  padding: 8px 15px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10px;
+}
+
+.tab-button:hover {
+  background-color: rgba(51, 255, 153, 0.1);
+}
+
+.tab-button.active {
+  background-color: #33FF99;
+  color: #000000;
+}
+
+.error-message {
+  color: #FF3333;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid #FF3333;
+}
+
+/* Targets Tab */
+.no-targets {
+  text-align: center;
+  padding: 30px;
+  color: #888888;
+}
+
+.targets-list {
+  border: 1px solid #33FF99;
+}
+
+.targets-header, .target-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 120px 80px;
+  gap: 10px;
+  align-items: center;
+  padding: 5px 10px;
+}
+
+.targets-header {
+  background-color: #33FF99;
+  color: #000000;
+  font-weight: bold;
+}
+
+.target-row {
+  border-bottom: 1px solid #333;
+}
+
+.target-row:hover {
+  background-color: rgba(51, 255, 153, 0.05);
+}
+
+.attack-link {
+  background: none;
+  border: none;
+  color: #33FF99;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 10px;
+}
+
+.attack-link:hover {
+  text-decoration: underline;
+}
+
+.attack-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disabled-action {
+  color: #888;
+  font-style: italic;
+}
+
+/* History Tab */
+.no-history {
+  text-align: center;
+  padding: 30px;
+  color: #888888;
+}
+
+.history-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.battle-record {
+  border: 1px solid #333;
+  margin-bottom: 10px;
+  padding: 8px;
+}
+
+.battle-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.battle-date {
+  color: #888;
+  font-size: 9px;
+}
+
+.battle-details {
+  font-size: 9px;
+  color: #ccc;
+}
+
+.resources-stolen {
+  color: #FFD700;
+}
+
+/* Status Tab */
+.combat-result {
+  border: 1px solid #33FF99;
+  padding: 10px;
+  margin-bottom: 15px;
+}
+
+.combat-result h3 {
+  color: #33FF99;
+  margin-bottom: 10px;
+}
+
+.combat-details p {
+  margin-bottom: 5px;
+}
+
+.resources-gained {
+  margin: 10px 0;
+  padding: 5px;
+  border-left: 3px solid #FFD700;
+}
+
+.resources-gained ul {
+  margin-left: 15px;
+}
+
+.pvp-stats {
+  border: 1px solid #33FF99;
+  padding: 10px;
+}
+
+.pvp-stats h3 {
+  color: #33FF99;
+  margin-bottom: 10px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.stat-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.stat-label {
+  color: #ccc;
+}
+
+.stat-value {
+  color: #33FF99;
+  font-weight: bold;
+}

@@ -13,7 +13,7 @@ class ManaRegenerationService {
             
             const { data: players, error } = await supabaseAdmin
                 .from('players')
-                .select('id, level, mana, max_mana');
+                .select('id, level, mana, max_mana, pvp_mana, last_pvp_mana_regen');
             
             if (error) {
                 console.error('Error fetching players for mana regen:', error);
@@ -25,7 +25,8 @@ class ManaRegenerationService {
                 return {
                     id: player.id,
                     mana: maxMana,
-                    max_mana: maxMana
+                    max_mana: maxMana,
+                    pvp_mana: player.pvp_mana || 5 // Default to 5 if null
                 };
             });
 
@@ -48,10 +49,64 @@ class ManaRegenerationService {
                 console.log(`[${new Date().toISOString()}] Regenerated mana for ${updates.length} players`);
             }
 
+            // Separately handle PvP mana (hourly regeneration)
+            await this.regeneratePvPMana();
             await this.logRegenerationEvent(updates.length);
             
         } catch (error) {
             console.error('Mana regeneration error:', error);
+        }
+    }
+
+    async regeneratePvPMana() {
+        try {
+            const now = new Date();
+            const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+            
+            // Update players who haven't had PvP mana regeneration in the last hour
+            const { data, error } = await supabaseAdmin
+                .from('players')
+                .select('id, pvp_mana, last_pvp_mana_regen')
+                .or(`last_pvp_mana_regen.is.null,last_pvp_mana_regen.lte.${oneHourAgo.toISOString()}`)
+                .lt('pvp_mana', 5); // Only regen if less than max
+            
+            if (error) {
+                console.error('Error fetching players for PvP mana regen:', error);
+                return;
+            }
+
+            let regenCount = 0;
+            for (const player of data) {
+                const currentPvPMana = player.pvp_mana || 0;
+                const lastRegen = player.last_pvp_mana_regen ? new Date(player.last_pvp_mana_regen) : new Date(0);
+                const timeSinceLastRegen = now.getTime() - lastRegen.getTime();
+                const hoursToRegen = Math.floor(timeSinceLastRegen / (60 * 60 * 1000));
+                
+                if (hoursToRegen >= 1) {
+                    const newPvPMana = Math.min(5, currentPvPMana + hoursToRegen);
+                    
+                    const { error: updateError } = await supabaseAdmin
+                        .from('players')
+                        .update({
+                            pvp_mana: newPvPMana,
+                            last_pvp_mana_regen: now.toISOString()
+                        })
+                        .eq('id', player.id);
+                    
+                    if (!updateError) {
+                        regenCount++;
+                    } else {
+                        console.error(`Error updating PvP mana for player ${player.id}:`, updateError);
+                    }
+                }
+            }
+            
+            if (regenCount > 0) {
+                console.log(`[${new Date().toISOString()}] Regenerated PvP mana for ${regenCount} players`);
+            }
+            
+        } catch (error) {
+            console.error('PvP mana regeneration error:', error);
         }
     }
 
@@ -94,7 +149,7 @@ class ManaRegenerationService {
         try {
             const { data: players, error } = await supabaseAdmin
                 .from('players')
-                .select('id, level, mana, max_mana, last_mana_regen');
+                .select('id, level, mana, max_mana, last_mana_regen, pvp_mana, last_pvp_mana_regen');
             
             if (error) {
                 console.error('Error checking missed regenerations:', error);
@@ -104,32 +159,55 @@ class ManaRegenerationService {
             const now = new Date();
             const regenHours = gameConfig.mana.regenerationHours * 60 * 60 * 1000; // Convert to ms
             let regeneratedCount = 0;
+            let pvpRegeneratedCount = 0;
 
             for (const player of players) {
+                // Regular mana regeneration
                 const lastRegen = player.last_mana_regen ? new Date(player.last_mana_regen) : new Date(0);
                 const timeSinceLastRegen = now.getTime() - lastRegen.getTime();
+                
+                let updateData = {};
                 
                 // If it's been more than regenHours since last regeneration, regenerate
                 if (timeSinceLastRegen >= regenHours) {
                     const maxMana = getMaxMana(player.level);
-                    
+                    updateData.mana = maxMana;
+                    updateData.max_mana = maxMana;
+                    updateData.last_mana_regen = now.toISOString();
+                    regeneratedCount++;
+                }
+                
+                // PvP mana regeneration (hourly)
+                const lastPvPRegen = player.last_pvp_mana_regen ? new Date(player.last_pvp_mana_regen) : new Date(0);
+                const timeSincePvPRegen = now.getTime() - lastPvPRegen.getTime();
+                const hoursToRegenPvP = Math.floor(timeSincePvPRegen / (60 * 60 * 1000));
+                
+                if (hoursToRegenPvP >= 1) {
+                    const currentPvPMana = player.pvp_mana || 0;
+                    const newPvPMana = Math.min(5, currentPvPMana + hoursToRegenPvP);
+                    updateData.pvp_mana = newPvPMana;
+                    updateData.last_pvp_mana_regen = now.toISOString();
+                    pvpRegeneratedCount++;
+                }
+                
+                // Apply updates if any
+                if (Object.keys(updateData).length > 0) {
                     const { error: updateError } = await supabaseAdmin
                         .from('players')
-                        .update({
-                            mana: maxMana,
-                            max_mana: maxMana,
-                            last_mana_regen: now.toISOString()
-                        })
+                        .update(updateData)
                         .eq('id', player.id);
                     
-                    if (!updateError) {
-                        regeneratedCount++;
+                    if (updateError) {
+                        console.error(`Error updating player ${player.id}:`, updateError);
                     }
                 }
             }
 
             if (regeneratedCount > 0) {
                 console.log(`Regenerated mana for ${regeneratedCount} players who missed regeneration while server was down`);
+            }
+            if (pvpRegeneratedCount > 0) {
+                console.log(`Regenerated PvP mana for ${pvpRegeneratedCount} players who missed regeneration while server was down`);
             }
         } catch (error) {
             console.error('Error in checkMissedRegenerations:', error);

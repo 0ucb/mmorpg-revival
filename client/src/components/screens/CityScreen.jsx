@@ -48,7 +48,7 @@ function CityScreen() {
           <div className="city-links">
             <a href="#" className="city-link disabled">Dungeon</a>
             <a href="#" className="city-link disabled">Rich sands</a>
-            <a href="#" className="city-link disabled">Daily Arena</a>
+            <Link to="/pvp" className="city-link">Arena (PvP)</Link>
             <a href="#" className="city-link disabled">Creatures black market</a>
           </div>
         </div>

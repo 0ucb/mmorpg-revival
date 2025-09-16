@@ -12,6 +12,7 @@ import armourerRoutes from './routes/armourer.js';
 import gemsStoreRoutes from './routes/gems-store.js';
 import marketRoutes from './routes/market.js';
 import resourcesRoutes from './routes/resources.js';
+import pvpRoutes from './routes/pvp.js';
 import { manaRegenerationService } from './services/manaRegeneration.js';
 
 dotenv.config();
@@ -71,6 +72,7 @@ app.use('/api/armourer', armourerRoutes);
 app.use('/api/gems-store', gemsStoreRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/resources', resourcesRoutes);
+app.use('/api/pvp', pvpRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
