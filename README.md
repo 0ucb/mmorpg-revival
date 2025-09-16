@@ -8,31 +8,38 @@ MarcoLand was a text-based, asynchronous MMORPG where players could battle monst
 
 ## Current Status
 
-🎮 **Playable Single-Player Game** - Phase 3 Ready
+🎮 **Production-Ready Single-Player Game** - Phase 4 Complete
 
 ### ✅ Implemented Features
 - **Complete Authentication System**: Secure email/password with httpOnly cookies
-- **React Frontend Interface**: Full web UI for single-player gameplay
+- **Full React Frontend**: Complete web UI with authentic MarcoLand navigation
 - **Character Creation & Progression**: Automatic setup with authentic MarcoLand mechanics
-- **Beach Combat System**: Fight 30 monsters (Goblin to Nazgul) with turn-based combat
-- **Temple Prayer System**: Convert mana to stat points (Strength/Speed/Intelligence) 
+- **Beach Combat System**: Fight 30 monsters (Goblin to Nazgul) with detailed turn-based combat
+- **Temple Prayer System**: Convert mana to stat points with authentic stat caps
 - **Complete Equipment System**: 51 weapons + 56 armor pieces with full economic cycle
-  - Equipment shop with purchase/sell functionality (50% sell-back rate)
+  - Unified equipment shop (⚠️ **Architecture Update Needed**)
   - Authentic encumbrance and speed modifier mechanics
   - Combat integration (weapon damage, armor protection)
   - Complete inventory management (equip/unequip/sell)
+- **Authentic Navigation**: Complete city structure matching original MarcoLand
 - **Level Progression**: Automatic level-ups, XP calculation, stat point rewards
 - **Mana Regeneration**: 6-hour cycle resource system
 - **Database Security**: Complete RLS policies and atomic operations
 - **Production-Ready**: 44 passing tests, comprehensive error handling
 
-### 🎯 Current Focus
-- **Web Interface Polish**: Completing the single-player experience
+### ⚠️ Architecture Update Required
+**Issue**: Current unified equipment shop doesn't match authentic MarcoLand city structure
+**Solution**: Next PR will implement separate NPC shops (Blacksmith, Armourer, Town gems store) + player market foundation
 
-### 📋 Planned Features (Phase 4+)
-- **Social Features**: Towns, guilds, player-to-player interaction
-- **PvP Combat**: Fight other players with intelligence modifiers
-- **Advanced Systems**: Quests, trading marketplace, town wars
+### 🎯 Current Focus
+- **Authentic City Structure**: Implementing separate NPC shops matching original game
+
+### 📋 Planned Features (Phase 5+)
+- **Player Market System**: Complete player-to-player trading (gems, metals, equipment)
+- **Advanced Resources**: Daily voting system, Tall Tree of Mana (gems → max mana)
+- **PvP Combat**: Player vs player with separate PvP mana pools and intelligence modifiers
+- **Social Features**: Towns, guilds, buddy/blacklist systems
+- **Advanced Systems**: Quests, town wars, creature summoning
 
 ## Quick Start
 
@@ -193,12 +200,20 @@ The API is available at `http://localhost:3000/api/docs` when the server is runn
 - `POST /api/temple/pray` - Convert mana to stat points (5/50/all mana)
 - `GET /api/temple/efficiency` - View current prayer efficiency
 
-#### Equipment System
-- `GET /api/equipment/shop` - Browse available equipment for purchase
+#### Equipment System (⚠️ Architecture Update Planned)
+- `GET /api/equipment/shop` - Browse available equipment (will be split into separate shops)
 - `POST /api/equipment/purchase` - Buy equipment with gold
 - `POST /api/equipment/sell` - Sell equipment back to shop (50% value)
 - `GET /api/equipment/inventory` - View equipped items and inventory
 - `POST /api/equipment/slot/:slot` - Equip/unequip items in slots
+
+#### Planned API Updates (Next PR)
+- `GET /api/blacksmith` - Weapons only (replacing unified shop)
+- `GET /api/armourer` - Armor only (replacing unified shop)
+- `GET /api/gems-store` - Daily gem purchases (30/day limit)
+- `GET /api/market` - Player marketplace (placeholder → full implementation)
+- `GET /api/resources/vote` - Daily voting system
+- `GET /api/resources/mana-tree` - Mana purchases with gems
 
 #### Player Data
 - `GET /api/players/me` - Get current player information
@@ -253,13 +268,12 @@ See [`ARCHITECTURE_ABSTRACT.md`](./ARCHITECTURE_ABSTRACT.md) for detailed system
 Contributions are welcome! Please feel free to submit pull requests.
 
 ### Development Guidelines
-1. Read [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) for roadmap
-2. Check [`HANDOFF_COMBAT_COMPLETE.md`](./HANDOFF_COMBAT_COMPLETE.md) for current state
-3. Review [`MARCOLAND_DATA_EXTRACTION.md`](./MARCOLAND_DATA_EXTRACTION.md) for authentic game mechanics
-4. See [`NEXT_PR_PLAN.md`](./NEXT_PR_PLAN.md) for upcoming features
-3. Follow existing code patterns
-4. Test all endpoints
-5. Update documentation
+1. Read [`DEVELOPMENT_PLAN.md`](./DEVELOPMENT_PLAN.md) for comprehensive roadmap
+2. Check [`GAME_ABSTRACT.md`](./GAME_ABSTRACT.md) for complete game systems overview
+3. Review [`NEXT_PR_AUTHENTIC_CITY_STRUCTURE.md`](./NEXT_PR_AUTHENTIC_CITY_STRUCTURE.md) for next priority
+4. See [`MARCOLAND_DATA_EXTRACTION.md`](./MARCOLAND_DATA_EXTRACTION.md) for authentic mechanics
+5. Follow existing code patterns and test coverage
+6. Update documentation and maintain API compatibility
 
 ## Data Recovery
 
@@ -309,16 +323,34 @@ For questions or issues, please open an issue on GitHub or check the `/scraped-d
 - [x] Combat and character progression screens
 - [x] Complete single-player experience
 
-### Phase 4: Social Features 📋 Planned
-- [ ] Multi-player features (towns, guilds)
-- [ ] PvP combat system
-- [ ] Player marketplace and trading
-- [ ] Chat and social interactions
+### Phase 4: Authentic Navigation ✅ Complete
+- [x] Complete city structure matching original MarcoLand
+- [x] All screens with proper navigation flow (Home → City → Beach/Temple/etc)
+- [x] Authentic MarcoLand interface styling and behavior
+- [x] Production-ready single-player game
 
-### Phase 5: Advanced Systems 📋 Future
-- [ ] Quest system and storylines
-- [ ] Town wars and large-scale PvP
-- [ ] Advanced mechanics (forging, legions, achievements)
+### Phase 5: Authentic City Architecture 🔄 In Progress
+- [ ] ⚠️ **Fix Equipment Shop Architecture**: Split unified shop into authentic separate stores
+- [ ] **NPC Shops**: Blacksmith (weapons), Armourer (armor), Town gems store (daily limits)
+- [ ] **Player Market Foundation**: Infrastructure for future player-to-player trading
+- [ ] **Resource Management**: Daily voting system, Tall Tree of Mana
+
+### Phase 6: Complete Trading Systems 📋 Planned
+- [ ] **Full Player Market**: Complete trading system (gems, metals, equipment)
+- [ ] **Daily Optimization**: Trading arbitrage and resource management strategies
+- [ ] **Skills System**: Gems finding skill integration
+
+### Phase 7: Social Features 📋 Planned  
+- [ ] **PvP Combat**: Separate PvP mana pools, intelligence modifiers
+- [ ] **Towns & Guilds**: Equipment sharing, social coordination
+- [ ] **Advanced Systems**: Buddy/blacklist management, chat systems
+
+### Phase 8: Advanced Systems 📋 Future
+- [ ] **Creature System**: Creature summoning, PvP metal farming
+- [ ] **Dungeon Exploration**: Treasure hunting, grand prizes
+- [ ] **Complete Skills**: Master forging, advanced progression systems
+- [ ] **Town Wars**: Large-scale PvP, siege weapons, legions
+- [ ] **Quest System**: Storylines and advanced game content
 
 ---
 

@@ -57,6 +57,36 @@ Players fight 30 monster types ranging from Goblins (Level 1, 10 HP) to Nazgul (
 - **Enhancement**: Upgrade equipment using Metals and Gold
 - **Cost Formula**: `Equipment Price / 300` in Metals or `Price / 1000` in Gold
 
+### Skills System
+
+#### Gems Finding Skill
+- **Acquisition Cost**: 20,000+ gold (requires sufficient reserves for daily trading)
+- **Activation**: Must be used daily as first action (5 mana cost)
+- **Progression**: +2% success rate per day used, -1% per day skipped
+- **Target**: Reach 100% success rate for maximum gem generation
+- **Returns**: Starts finding 0 gems, becomes highly profitable after weeks
+- **Strategic Value**: Essential for sustainable mana purchases (100 gems = 1 max mana)
+
+#### Master Forging System
+- **Entry Cost**: 150,000 gold minimum investment
+- **Level Requirement**: 50+ recommended for economic viability
+- **Training Process**: Must forge every single weapon/armor type from city shops
+- **Duration**: 100+ days to achieve mastery
+- **Resource Intensive**: Requires massive amounts of metals and gold
+
+**Adept System**:
+- **Adept Recruitment**: Find level 1 or level 10 players willing to become adepts
+- **Mission Completion**: Adepts must level from 1→10 or 10→20
+- **Project Requirements**: Need sufficient adepts + resources for custom items
+- **No Material Rewards**: Cannot transfer items to adepts (rule enforcement)
+- **Knowledge Transfer**: Masters provide guidance and game information
+
+**Master Benefits**:
+- **Custom Equipment**: Create items superior to shop-bought gear
+- **Weapon Upgrades**: Enhance existing equipment beyond standard limits
+- **Economic Control**: Dominate server equipment meta
+- **Prestige**: Recognition as elite endgame player
+
 ### 4. Economy System
 
 #### Currencies
@@ -69,6 +99,27 @@ Players fight 30 monster types ranging from Goblins (Level 1, 10 HP) to Nazgul (
 - **Player Trading**: Asynchronous marketplace for items
 - **Price Discovery**: Player-driven economy with supply/demand dynamics
 - **Town Resources**: Pooled resources for war efforts
+
+#### Essential Daily Trading Strategy
+The cornerstone of successful play was disciplined daily arbitrage:
+
+**Metal Trading**:
+- Buy 30 Metals from store at 90 gold each (2,700 total)
+- Immediately sell at market for 300 gold each (9,000 total)
+- Guaranteed profit of 6,300 gold daily with no risk
+- Fast-moving commodity that always sells quickly
+
+**Gem Trading**:
+- Buy 30 Gems from store at 90 gold each (2,700 total)
+- Check market prices by clicking 'unit price' in gem market
+- Sell at 1 gold below current lowest price for quick movement
+- Variable profit based on market conditions (typically 3,000-6,000 gold)
+
+**Advanced Market Manipulation**:
+- Hunt for underpriced gem bundles on player market
+- Repackage large bundles into smaller quantities (100-gem bundles sell best)
+- Exploit price inefficiencies between different bundle sizes
+- Time-intensive but highly profitable for dedicated players
 
 ### 5. Town System (Guild Equivalent)
 
@@ -128,14 +179,54 @@ Two types of large-scale PvP events:
 ### 7. Social Systems
 
 #### Communication
-- **Global Chat**: Server-wide communication
+- **Global Chat**: Server-wide communication and learning center
 - **Town Chat**: Private town member discussions
 - **Whispers**: Direct player messaging
+- **Learning Hub**: Chat was the primary source of game knowledge and connections
 
-#### Relationships
-- **Friends List**: Track allies and contacts
-- **Enemy Lists**: Mark rivals for quick identification
-- **Town Loyalty**: Belonging creates identity and purpose
+#### Advanced Social Tools
+
+**Buddy List Management**:
+- **Quick Online Check**: See which friends/allies are currently active
+- **Strategic Networking**: Track important town members (armourers, officers)
+- **Description System**: Add notes to remember who people are across name changes
+- **Direct Access**: Message buddies knowing they'll reply quickly
+- **Town Integration**: Essential for coordinating with key town personnel
+
+**Blacklist System (Essential PvP Tool)**:
+- **Target Database**: Add up to 100+ weak opponents for systematic hunting
+- **Live Status Tracking**: See who's alive/dead at a glance
+- **Quick Combat**: Direct [Fight] links for rapid PvP engagement
+- **Sortable Interface**: Sort by ID, level, status for optimal target selection
+- **Level Management**: Replace entire list when level limits change
+- **Description Notes**: Tag targets with relevant combat information
+
+**Strategic Usage**:
+- **PvP Efficiency**: Blacklist enables rapid consumption of PvP Mana
+- **Target Acquisition**: Use Sum-It-All rankings to find weakest players
+- **Level Transitions**: Replace blacklist every few levels (level 3→6→9, etc.)
+- **Simultaneous Attacks**: Click multiple fights quickly using blacklist
+
+#### Voting System
+- **Daily Participation**: Vote for server bonuses and rewards
+- **Gold Rewards**: 500-1000 gold daily guaranteed
+- **Rare Bonuses**: Small chance for valuable Mana reloads
+- **Location**: Large "VOTE HERE!" sign in city center
+- **Strategic Value**: Reliable income source, essential daily routine
+
+#### User Customization
+
+**Color Schemes**:
+- **Layout Options**: Change page colors for personal preference
+- **Number Formatting**: Customize how statistics are displayed
+- **Visual Comfort**: Reduce eye strain during long sessions
+
+**User Links (Power User Tool)**:
+- **Favorite Pages**: Add any game page to quick-access menu
+- **Daily Automation**: Links for buying 30 gems, 30 metals with single clicks
+- **POST Data Links**: Even store form submissions (buy gems link)
+- **Routine Optimization**: All daily tasks accessible from one menu
+- **Memory Aid**: Never forget important daily activities
 
 ### 8. Mana System
 
@@ -158,10 +249,25 @@ Two types of large-scale PvP events:
 
 ### 9. Combat Limitations
 
-#### PvP Restrictions
-- **Attack Limit**: 10 PvP attacks per day (separate from mana system)
-- **Speed Advantage**: Higher speed determines first strike
-- **Intelligence Scaling**: Damage multiplier based on INT ratio
+#### PvP Mana System
+- **Separate Resource**: PvP Mana distinct from regular mana pool
+- **Starting Amount**: All players begin with 5 PvP Mana (also the minimum)
+- **Maximum Capacity**: Can expand up to 50 PvP Mana through combat
+- **Daily Reset**: PvP Mana pool refreshes independently of regular mana
+- **Usage Priority**: PvP Mana consumed first in player combat
+
+#### PvP Mana Expansion
+- **Gain Condition**: +0.2 PvP Mana per 2 kills against players within 60% of your level
+- **Loss Condition**: -0.2 PvP Mana per death in PvP combat
+- **Strategic Value**: 50 PvP Mana = 40,000-100,000 daily XP + 30-100 gems
+- **Early Investment**: Use regular mana + PvP mana initially to build PvP Mana pool
+- **Sustainable PvP**: At 10+ PvP Mana, can maintain growth using only PvP Mana
+
+#### PvP Combat Mechanics
+- **Speed Advantage**: Higher speed determines first strike and attack frequency
+- **Intelligence Scaling**: Damage multiplier based on INT ratio between combatants
+- **Critical Hits**: Intelligence affects critical hit probability
+- **Level Restrictions**: Can only attack players within certain level ranges
 
 #### PvE Balance
 - **Mana Efficiency**: Higher monsters give better XP/gold per mana
@@ -181,21 +287,181 @@ Two types of large-scale PvP events:
 
 ## Game Loop
 
-### Daily Cycle
-1. **Login & Resource Collection**: Regenerated HP/Mana
-2. **Beach Training**: Fight monsters for XP/Gold
-3. **Temple Praying**: Convert Mana to stats
-4. **Equipment Management**: Buy/forge/trade gear
-5. **PvP Encounters**: Arena battles or open combat
-6. **Town Activities**: Contribute to war efforts, socialize
-7. **Market Trading**: Buy/sell items with other players
+### Optimal Daily Routine (Essential Strategy)
+The most successful players followed this disciplined daily sequence:
+
+1. **Enter MarcoLand** - Check status and resources
+2. **Vote** - Daily voting for 500-1000 gold + rare mana reload chance
+3. **Use Skills** - Gems Finding skill (5 mana) if owned, becomes highly profitable after weeks
+4. **Market Trading** - Buy 30 Metals (2,700g) → Sell for 9,000g; Buy 30 Gems (2,700g) → Resell at market rate
+5. **Exhaust All Mana** - Beach training or Temple praying until 0 mana remaining
+6. **PvP Combat** - Use separate PvP Mana pool (5-50 daily attacks)
+7. **Buy Mana** - At Tall Tree of Mana with 100 gems (when successful at collecting)
+8. **Request Equipment** - Upgrade weapons/armor from town armory as strength increases
+
+### Strategic Training Patterns
+
+**Early Game Focus (Levels 1-50)**:
+- Prioritize Strength to 1000+ (weapon requirements and damage)
+- Minimal Speed investment (causes damage penalty but survivable)
+- Intelligence at 1/6th of Strength ratio
+- Target stat distribution: 1000 STR / 167 SPD / 167 INT at stat caps
+
+**Stat Cap Management**:
+- **First Cap** (1100 total stats): Manageable, continue strength focus
+- **Second Cap** (1300 total stats): Dangerous - must have 800+ Strength minimum
+- **Third Cap** (1500 total stats): Critical - need 1000+ Strength for Apocalyptica weapon
+- **Beyond 1500**: Severely diminished prayer returns (1.1 avg per 50 mana)
+
+**Speed Training Strategy**:
+- Avoid speed until full Astral Armor strength requirement (1135 STR)
+- Only then begin speed investment for encumbrance balance
+- Speed reduces damage penalty: `0.5 + 0.5 × (Speed/Encumbrance)`
+
+### PvP Optimization
+
+**Target Selection**:
+- Players without towns (easier targets)
+- Higher ID numbers than yours (newer players)
+- Within 60% of your level for PvP Mana gains
+- Use Best of Marcoland to test combat effectiveness
+
+**PvP Timing**:
+- Optimal windows: 0:00, 4:00 (after wars), 6:00, 12:00, 18:00 MarcoLand time
+- These times align with player revivals and war schedules
 
 ### Long-term Goals
-1. **Character Power**: Maximize stats and equipment
-2. **Town Dominance**: Help town win wars and gain territory
-3. **Economic Success**: Accumulate wealth and rare items
-4. **Social Standing**: Build reputation and relationships
-5. **Legion Leadership**: Command specialized war units
+1. **Character Power**: 1000+ Strength, Apocalyptica weapon, full Astral armor
+2. **Economic Dominance**: Master daily trading routine, acquire Gems Finding skill
+3. **PvP Supremacy**: 50 PvP Mana pool, comprehensive blacklist of targets
+4. **Town Leadership**: Become town officer, contribute to war efforts
+5. **Master Forging**: 150,000g investment, train adepts, create custom equipment
+
+### 11. Creature System
+
+#### Creature Acquisition and Cost
+- **Timing Strategy**: Buy at level 1 for lowest cost (level-based pricing)
+- **Wealth-Based Pricing**: Cost scales with current gold/metal holdings
+- **Optimal Purchase**: 63 metals + 2,500 gold for minimum price
+- **Level 10+ Requirement**: Costs additional 1 Quarz (rare crystal worth 1M+ gold)
+- **Strategic Stockpiling**: Acquire before wealth accumulation for massive savings
+
+#### Creature Development  
+- **Experience System**: Creatures gain XP and levels from combat
+- **Stat Allocation**: Distribute points between Bite/Kick/Punch attacks and Hit Points
+- **Optimal Strategy**: Keep min and max damage equal for guaranteed kills
+- **Training Methods**: Fight other creatures early, then use summoning spells
+- **Preservation**: Most valuable creature has 0 XP (untouched until ready for summoning)
+
+#### Summoning Mechanics
+- **Requirements**: 100+ Intelligence, 100+ Magic Points for Summon spells
+- **Stat Multiplication**: Summon I = 10x creature HP, 10x all attacks combined
+- **Combat Priority**: Creatures attack first, ignore armor entirely  
+- **Metal Rewards**: Successful kills steal metals equal to creature's base HP
+- **Safe Summoning**: Guarantee one-shot kills by targeting players with less HP than creature damage
+
+**Example Calculation**:
+- Creature: 20 HP, 7/7/8 min attack, 7/7/8 max attack (22 total)
+- With Summon I: 200 HP, 220 min/max damage
+- Can safely kill level 9 players (189 HP), steal 20 metals per kill
+
+#### Economic Impact
+- **Daily Income**: 200,000+ gold through systematic metal farming
+- **Target Scarcity Solution**: Convert unused PvP Mana to metals via summoning
+- **Resource Generation**: High-level creatures enable sustainable endgame economy
+- **Risk Management**: Calculate exact damage to ensure zero-risk battles
+
+### 12. Dungeon Exploration System
+
+#### Entry and Navigation
+- **Entry Cost**: 1 mana to enter the dungeon
+- **Combat Cost**: Additional 1 mana per monster encounter  
+- **Navigation**: Use arrow keys to move through hallways and chambers
+- **Mapping**: Automatic map generation of explored areas
+- **Safe Zone**: Players cannot be attacked by other players while in dungeon
+
+#### Treasure Discovery
+Players can find random treasures when entering unexplored squares:
+- **Mana Reloads** (very rare) - Complete mana restoration
+- **MP Reloads** (very rare) - Magic Point restoration  
+- **Gold** (rare) - Direct gold rewards
+- **Gems** (rare) - Valuable currency
+- **Metals** (rare) - Forging materials
+- **Healing Potions** (rare) - HP restoration items
+- **Teleports** (rare) - Return to previously visited dungeon locations
+
+#### Monster Encounters
+- **Random Battles**: Each square may contain a creature
+- **Beach-Style Combat**: Same mechanics as Training Beach fights
+- **No Healing**: Cannot heal between fights inside dungeon
+- **Recommended Level**: 40-50+ due to inability to heal mid-exploration
+
+#### Advanced Mechanics
+**Checkpoints**:
+- Cost: 100 metals to establish a checkpoint
+- Recall Cost: Variable Magic Points based on distance from entrance
+- Reusable: Multiple teleports possible with sufficient MPs
+- Strategic Value: Jump directly to appropriate monster areas
+
+**The Grand Prize**:
+- Single special square contains major reward (metals, gems, gold bundle)
+- First player to reach square claims prize
+- Dungeon resets immediately after prize claimed
+- Variable rewards each reset cycle
+
+#### Strategic Considerations
+- **Resource Management**: Balance exploration vs. combat costs
+- **Level Requirements**: High-level players can survive longer expeditions
+- **Risk/Reward**: Deeper exploration = better rewards but higher danger
+- **PvP Safety**: Perfect refuge from player attacks during exploration
+
+### 13. Rule Enforcement and Jail System
+
+#### Jail Mechanics
+- **Purpose**: Punishment facility for rule violations
+- **Duration**: Variable sentences based on crime severity
+- **Restrictions**: Cannot take normal game actions while imprisoned
+- **Limited Activities**: Can still pray at temple, use skills, buy items in city
+- **Administration**: Enforced by Sheriff and other Administrators
+
+#### Prohibited Activities
+
+**Multiple Characters**:
+- **Strict Prohibition**: One character per player maximum
+- **Detection Methods**: IP tracking and behavioral analysis
+- **Punishment**: Deletion of youngest account + jail time for older account
+- **Zero Tolerance**: Immediate enforcement upon discovery
+
+**Funds Transfer**:
+- **No Direct Trading**: Cannot give money/items to other players
+- **Price Manipulation**: Cannot buy/sell at artificial prices to transfer wealth
+- **Market Abuse**: No extremely high/low price transactions for transfers
+- **Economic Integrity**: Prevents wealthy players from boosting friends
+
+**Automation and Scripting**:
+- **No Bots**: Prohibited use of automatic programs
+- **Manual Play Only**: All actions must be performed by human players
+- **Detection**: Pattern analysis identifies automated behavior
+- **Competitive Fairness**: Ensures level playing field
+
+**Communication Standards**:
+- **Appropriate Names**: No offensive or imitative character names
+- **No Spam/Flooding**: Prohibited in chat and forums
+- **General Conduct**: Maintain respectful community interaction
+- **Content Moderation**: Sheriff enforces communication standards
+
+#### Administrative Structure
+- **The Sheriff**: Primary rule enforcement administrator
+- **Other Admins**: Support staff for various game aspects
+- **Player Reporting**: Community can report suspected violations
+- **Investigation Process**: Thorough review before punishment
+- **Appeal System**: Players can question decisions
+
+#### Strategic Considerations
+- **Prevention**: Better to ask administrators before questionable actions
+- **Community Guidelines**: When in doubt, consult experienced players
+- **Risk Assessment**: Rule violations can destroy months of character development
+- **Clean Play**: Following rules essential for long-term success
 
 ## Unique Design Elements
 
