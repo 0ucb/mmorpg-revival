@@ -1,6 +1,6 @@
 import React from 'react';
 
-function InventoryItem({ item, inventoryId, type, onSell, onEquip, isLoading }) {
+function InventoryItem({ item, inventoryId, itemId, type, onSell, onEquip, isLoading }) {
   if (!item) return null;
 
   const handleSell = () => {
@@ -10,7 +10,7 @@ function InventoryItem({ item, inventoryId, type, onSell, onEquip, isLoading }) 
   };
 
   const handleEquip = () => {
-    onEquip(inventoryId, type, item);
+    onEquip(itemId, type, item); // Use itemId instead of inventoryId
   };
 
   const formatDamage = () => {

@@ -70,10 +70,10 @@ function EquipmentScreen() {
       // Reload equipment data to reflect changes
       await loadEquipmentData();
       // Show success message
-      alert(`Sold ${result.item_name} for ${result.gold_earned} gold!`);
+      console.log(`Sold ${result.item_name} for ${result.gold_earned} gold!`);
     } catch (err) {
       console.error('Error selling item:', err);
-      alert(`Error selling item: ${err.message}`);
+      console.error('Error selling item:', err.message);
     } finally {
       setActionLoading(null);
     }
@@ -106,10 +106,10 @@ function EquipmentScreen() {
       
       // Reload equipment data to reflect changes
       await loadEquipmentData();
-      alert(`Item equipped successfully!`);
+      console.log('Item equipped successfully!');
     } catch (err) {
       console.error('Error equipping item:', err);
-      alert(`Error equipping item: ${err.message}`);
+      console.error('Error equipping item:', err.message);
     } finally {
       setActionLoading(null);
     }
@@ -122,6 +122,56 @@ function EquipmentScreen() {
     // Handle both direct item objects and nested structures
     const item = equippedItem.item || equippedItem;
     return item?.name || null;
+  };
+
+  const handleUnequip = async (slot) => {
+    try {
+      setActionLoading(`unequip-${slot}`);
+      
+      await equipItem(slot, null); // null means unequip
+      await loadEquipmentData(); // Refresh data
+      console.log('Item unequipped successfully!', { slot });
+    } catch (err) {
+      console.error('Error unequipping item:', err.message);
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const renderEquipmentSlot = (slot, label) => {
+    const equippedItem = equipmentData?.equipped?.[slot];
+    const isUnequipping = actionLoading === `unequip-${slot}`;
+    
+    return (
+      <div key={slot} className="equipment-slot">
+        <span className="slot-label">{label} :</span>
+        <span className="slot-value">
+          {equippedItem ? getEquippedItemName(slot) : '[empty]'}
+          {equippedItem && (
+            <span style={{ marginLeft: '10px' }}>
+              {isUnequipping ? (
+                <span style={{ color: '#888' }}>[unequipping...]</span>
+              ) : (
+                <a 
+                  href="#" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handleUnequip(slot);
+                  }}
+                  style={{ 
+                    color: '#33FF99', 
+                    textDecoration: 'none',
+                    fontSize: '0.9em'
+                  }}
+                >
+                  [unequip]
+                </a>
+              )}
+            </span>
+          )}
+        </span>
+      </div>
+    );
   };
 
   if (loading) {
@@ -158,30 +208,12 @@ function EquipmentScreen() {
       
       {/* Equipment Slots */}
       <div className="equipment-slots">
-        <div className="equipment-slot">
-          <span className="slot-label">Lower body :</span>
-          <span className="slot-value">{getEquippedItemName('legs') || '[empty]'}</span>
-        </div>
-        <div className="equipment-slot">
-          <span className="slot-label">Upper body :</span>
-          <span className="slot-value">{getEquippedItemName('body') || '[empty]'}</span>
-        </div>
-        <div className="equipment-slot">
-          <span className="slot-label">Head :</span>
-          <span className="slot-value">{getEquippedItemName('head') || '[empty]'}</span>
-        </div>
-        <div className="equipment-slot">
-          <span className="slot-label">Hands :</span>
-          <span className="slot-value">{getEquippedItemName('hands') || '[empty]'}</span>
-        </div>
-        <div className="equipment-slot">
-          <span className="slot-label">Feet :</span>
-          <span className="slot-value">{getEquippedItemName('feet') || '[empty]'}</span>
-        </div>
-        <div className="equipment-slot">
-          <span className="slot-label">Weapon :</span>
-          <span className="slot-value">{getEquippedItemName('weapon') || '[empty]'}</span>
-        </div>
+        {renderEquipmentSlot('legs', 'Lower body')}
+        {renderEquipmentSlot('body', 'Upper body')}
+        {renderEquipmentSlot('head', 'Head')}
+        {renderEquipmentSlot('hands', 'Hands')}
+        {renderEquipmentSlot('feet', 'Feet')}
+        {renderEquipmentSlot('weapon', 'Weapon')}
       </div>
 
       {/* Equipment Stats */}
@@ -201,6 +233,7 @@ function EquipmentScreen() {
               key={invItem.inventory_id}
               item={invItem.item}
               inventoryId={invItem.inventory_id}
+              itemId={invItem.item_id}
               type={invItem.type}
               onSell={handleSellItem}
               onEquip={handleEquipItem}

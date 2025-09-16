@@ -61,8 +61,7 @@ function BlacksmithScreen() {
 
   const handlePurchase = async (weapon) => {
     if (weapon.cost_gold > playerGold) {
-      alert('Not enough gold!');
-      return;
+      return; // UI already shows affordability
     }
 
     if (!weapon.can_use) {
@@ -76,7 +75,7 @@ function BlacksmithScreen() {
       
       if (result.success) {
         setPlayerGold(result.remaining_gold);
-        alert(`Successfully purchased ${result.weapon_name}!`);
+        console.log(`Successfully purchased ${result.weapon_name}!`);
         
         // Refresh player data in sidebar and reload weapons
         await refreshPlayer();
@@ -84,7 +83,6 @@ function BlacksmithScreen() {
       }
     } catch (error) {
       console.error('Error purchasing weapon:', error);
-      alert(`Failed to purchase weapon: ${error.message}`);
     } finally {
       setPurchasing(false);
     }

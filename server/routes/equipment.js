@@ -64,9 +64,15 @@ router.get('/inventory', requireAuth, async (req, res) => {
         // Format inventory items
         const formattedInventory = inventory.map(item => ({
             inventory_id: item.id,
+            item_id: item.weapon?.id || item.armor?.id, // This is what equip function needs
             item: item.weapon || item.armor,
             type: item.weapon ? 'weapon' : 'armor'
         }));
+
+        console.log('Equipment inventory debug:', {
+            inventoryRaw: inventory?.slice(0, 3), // First 3 items
+            formattedInventory: formattedInventory?.slice(0, 3) // First 3 formatted
+        });
 
         res.json({
             success: true,
@@ -107,6 +113,16 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
             // Determine item type based on slot
             const itemType = slot === 'weapon' ? 'weapon' : 'armor';
 
+            // Debug logging
+            console.log('Equip item debug:', {
+                playerId,
+                item_id,
+                itemType,
+                slot,
+                playerIdType: typeof playerId,
+                itemIdType: typeof item_id
+            });
+
             // Use database function for atomic equip operation
             result = await supabaseAdmin.rpc('equip_item', {
                 p_player_id: playerId,
@@ -120,7 +136,10 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
                 return res.status(500).json({ error: 'Equip failed due to server error' });
             }
 
+            console.log('Equip result:', { data: result.data, error: result.error });
+
             if (!result.data || !result.data.success) {
+                console.log('Equip failed with data:', result.data);
                 return res.status(400).json({ 
                     error: result.data?.error || 'Failed to equip item',
                     details: result.data

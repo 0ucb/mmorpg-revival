@@ -82,6 +82,14 @@ router.post('/purchase', requireAuth, async (req, res) => {
             return res.status(400).json({ error: 'Invalid weapon ID - only weapons can be purchased from blacksmith' });
         }
 
+        // Debug logging
+        console.log('Blacksmith purchase debug:', {
+            playerId,
+            equipment_id,
+            playerIdType: typeof playerId,
+            equipmentIdType: typeof equipment_id
+        });
+
         // Use existing purchase_equipment function (weapons only)
         const { data, error } = await supabaseAdmin.rpc('purchase_equipment', {
             p_player_id: playerId,
@@ -94,7 +102,10 @@ router.post('/purchase', requireAuth, async (req, res) => {
             return res.status(500).json({ error: 'Purchase failed due to server error' });
         }
 
+        console.log('Database function response:', { data, error });
+
         if (!data || !data.success) {
+            console.log('Purchase failed with data:', data);
             return res.status(400).json({ 
                 error: data?.error || 'Purchase failed',
                 details: data
