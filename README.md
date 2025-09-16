@@ -8,38 +8,44 @@ MarcoLand was a text-based, asynchronous MMORPG where players could battle monst
 
 ## Current Status
 
-🎮 **Production-Ready Single-Player Game** - Phase 4 Complete
+🎮 **Production-Ready Single-Player Game** - Phase 5 Complete
 
 ### ✅ Implemented Features
 - **Complete Authentication System**: Secure email/password with httpOnly cookies
 - **Full React Frontend**: Complete web UI with authentic MarcoLand navigation
 - **Character Creation & Progression**: Automatic setup with authentic MarcoLand mechanics
 - **Beach Combat System**: Fight 30 monsters (Goblin to Nazgul) with detailed turn-based combat
-- **Temple Prayer System**: Convert mana to stat points with authentic stat caps
+- **Complete Temple Prayer System**: Convert mana to focused stat gains with decimal precision
+  - Clickable mana amount links ([5] [50] [all]) for flexible prayers
+  - Focused stat gains (all gains go to chosen stat: strength/speed/intelligence)
+  - Authentic MarcoLand decimal precision (DECIMAL(6,3)) with exact gain display
+- **Authentic NPC Shop Structure**: Separate shops matching original MarcoLand city
+  - **Blacksmith**: Weapons only ("Buy Your Weapons Here")
+  - **Armourer**: Armor only ("Buy Your Armours Here") 
+  - **Gems Store**: 30 daily gems at 90g each with daily limit enforcement
+  - **Market & Resources**: Vote system and Mana Tree infrastructure ready
 - **Complete Equipment System**: 51 weapons + 56 armor pieces with full economic cycle
-  - Unified equipment shop (⚠️ **Architecture Update Needed**)
   - Authentic encumbrance and speed modifier mechanics
   - Combat integration (weapon damage, armor protection)
-  - Complete inventory management (equip/unequip/sell)
+  - Complete inventory management with [unequip] functionality
+- **Robust Mana Management**: 6-hour regeneration with offline catch-up system
 - **Authentic Navigation**: Complete city structure matching original MarcoLand
 - **Level Progression**: Automatic level-ups, XP calculation, stat point rewards
-- **Mana Regeneration**: 6-hour cycle resource system
 - **Database Security**: Complete RLS policies and atomic operations
-- **Production-Ready**: 44 passing tests, comprehensive error handling
+- **Production-Ready**: Comprehensive error handling, clean UX without alert() popups
 
-### ⚠️ Architecture Update Required
-**Issue**: Current unified equipment shop doesn't match authentic MarcoLand city structure
-**Solution**: Next PR will implement separate NPC shops (Blacksmith, Armourer, Town gems store) + player market foundation
+### 🎯 Current Status
+- **Core Single-Player Loop**: Complete and fully functional
+- **Daily Trading Foundation**: NPC shops ready for arbitrage strategies
+- **Authentic MarcoLand Experience**: True to original game mechanics and interface
 
-### 🎯 Current Focus
-- **Authentic City Structure**: Implementing separate NPC shops matching original game
-
-### 📋 Planned Features (Phase 5+)
+### 📋 Next Features (Phase 6+)
 - **Player Market System**: Complete player-to-player trading (gems, metals, equipment)
-- **Advanced Resources**: Daily voting system, Tall Tree of Mana (gems → max mana)
+- **Daily Resource Activities**: Voting rewards and Mana Tree purchases (gems → max mana)
 - **PvP Combat**: Player vs player with separate PvP mana pools and intelligence modifiers
-- **Social Features**: Towns, guilds, buddy/blacklist systems
-- **Advanced Systems**: Quests, town wars, creature summoning
+- **Skills System**: Gems Finding skill with daily progression and economic impact
+- **Social Features**: Towns, guilds, buddy/blacklist systems for target management
+- **Advanced Systems**: Quests, town wars, creature summoning and dungeon exploration
 
 ## Quick Start
 

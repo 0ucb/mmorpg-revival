@@ -82,22 +82,25 @@ SUPABASE_ANON_KEY=your_key
 SUPABASE_SERVICE_KEY=your_service_key
 ```
 
-## Current Status (Phase 4 Complete)
+## Current Status (Phase 5 Complete)
 
-### ✅ Complete Navigation & Authentic MarcoLand UI
-- **Navigation System**: Full React Router implementation with proper screen hierarchy
-- **Authentic Interface**: All screens match original MarcoLand design patterns and styling
-- **Screen Structure**: Home → City → Battle/Beach/Temple/Blacksmith with proper navigation flow
-- **Combat System**: Turn-by-turn combat logs with detailed attack/damage output
-- **Temple Interface**: Authentic Tiipsi lore with red highlighting and simple prayer links
-- **City Layout**: Two-column structure matching original with all location categories
+### ✅ Complete Temple Prayer System & Authentic NPC Shops
+- **Temple Prayers**: Focused stat gains with decimal precision matching original MarcoLand
+  - Clickable mana amount links ([5] [50] [all]) for flexible prayer options
+  - All stat gains go to chosen stat (strength/speed/intelligence) instead of random distribution
+  - Authentic DECIMAL(6,3) precision with exact gain display (+1.463 strength)
+- **Authentic NPC Shop Structure**: Separate shops matching original MarcoLand city
+  - Blacksmith (weapons only), Armourer (armor only), Gems Store (30 daily limit)
+  - Daily trading foundation ready for metals/gems arbitrage strategies
+- **Robust Equipment System**: Complete equip/unequip with [unequip] links for equipped items
+- **Reliable Mana Management**: 6-hour regeneration with offline catch-up system
 
 ### ✅ Production-Ready Single-Player Game  
 - **Authentication**: Secure httpOnly cookie system with CORS support
-- **Frontend**: Complete React interface with navigation, combat, character progression  
-- **Backend**: Full REST API with 44 passing tests
-- **Database**: Complete schema with atomic operations and RLS security
-- **Game Systems**: Beach combat, Temple prayers, Equipment economy, City navigation
+- **Frontend**: Complete React interface with authentic MarcoLand navigation and clean UX
+- **Backend**: Full REST API with comprehensive error handling
+- **Database**: Complete schema with atomic operations, RLS security, and decimal stat precision
+- **Game Systems**: Beach combat, focused Temple prayers, authentic NPC shops, complete equipment cycle
 
 ### Key Authentication Implementation
 - **CORS**: Configured for frontend (port 3001) to backend (port 3000) communication

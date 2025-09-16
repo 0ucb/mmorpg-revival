@@ -2,6 +2,7 @@ import express from 'express';
 import { supabaseAdmin } from '../config/supabase.js';
 import { requireAuth } from '../middleware/auth.js';
 import { calculateSpeedModifier, canEquip } from '../config/equipment.js';
+import { sendError, sendSuccess } from '../utils/errorHandler.js';
 
 const router = express.Router();
 
@@ -31,7 +32,7 @@ router.get('/inventory', requireAuth, async (req, res) => {
 
         if (equippedError && equippedError.code !== 'PGRST116') { // PGRST116 = no rows found
             console.error('Error fetching equipped items:', equippedError);
-            return res.status(500).json({ error: 'Failed to load equipped items' });
+            return sendError(res, 500, 'Failed to load equipped items');
         }
 
         // Get unequipped items (inventory)
@@ -46,7 +47,7 @@ router.get('/inventory', requireAuth, async (req, res) => {
 
         if (inventoryError) {
             console.error('Error fetching inventory:', inventoryError);
-            return res.status(500).json({ error: 'Failed to load inventory' });
+            return sendError(res, 500, 'Failed to load inventory' });
         }
 
         // Get cached combat stats
@@ -58,7 +59,7 @@ router.get('/inventory', requireAuth, async (req, res) => {
 
         if (statsError && statsError.code !== 'PGRST116') { // Allow no stats (new player)
             console.error('Error fetching combat stats:', statsError);
-            return res.status(500).json({ error: 'Failed to load combat stats' });
+            return sendError(res, 500, 'Failed to load combat stats' });
         }
 
         // Format inventory items
@@ -74,8 +75,7 @@ router.get('/inventory', requireAuth, async (req, res) => {
             formattedInventory: formattedInventory?.slice(0, 3) // First 3 formatted
         });
 
-        res.json({
-            success: true,
+        return sendSuccess(res, {
             equipped: equipped || {},
             inventory: formattedInventory,
             combat_stats: combatStats || {
@@ -89,7 +89,7 @@ router.get('/inventory', requireAuth, async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching inventory:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        return sendError(res, 500, 'Internal server error' });
     }
 });
 
@@ -103,7 +103,7 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
         // Validate slot
         const validSlots = ['weapon', 'head', 'body', 'legs', 'hands', 'feet'];
         if (!validSlots.includes(slot)) {
-            return res.status(400).json({ error: 'Invalid slot. Must be one of: ' + validSlots.join(', ') });
+            return sendError(res, 400, 'Invalid slot. Must be one of: ' + validSlots.join(', ') });
         }
 
         let result;
@@ -133,14 +133,14 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
 
             if (result.error) {
                 console.error('Equip error:', result.error);
-                return res.status(500).json({ error: 'Equip failed due to server error' });
+                return sendError(res, 500, 'Equip failed due to server error' });
             }
 
             console.log('Equip result:', { data: result.data, error: result.error });
 
             if (!result.data || !result.data.success) {
                 console.log('Equip failed with data:', result.data);
-                return res.status(400).json({ 
+                return sendError(res, 400, 
                     error: result.data?.error || 'Failed to equip item',
                     details: result.data
                 });
@@ -155,11 +155,11 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
 
             if (result.error) {
                 console.error('Unequip error:', result.error);
-                return res.status(500).json({ error: 'Unequip failed due to server error' });
+                return sendError(res, 500, 'Unequip failed due to server error' });
             }
 
             if (!result.data || !result.data.success) {
-                return res.status(400).json({ 
+                return sendError(res, 400, 
                     error: result.data?.error || 'Failed to unequip item',
                     details: result.data
                 });
@@ -173,8 +173,7 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
             .eq('player_id', playerId)
             .single();
 
-        res.json({
-            success: true,
+        return sendSuccess(res, {
             message: item_id ? 'Item equipped successfully' : 'Item unequipped successfully',
             action: item_id ? 'equipped' : 'unequipped',
             slot: slot,
@@ -184,7 +183,7 @@ router.post('/slot/:slot', requireAuth, async (req, res) => {
 
     } catch (error) {
         console.error('Error during slot operation:', error);
-        res.status(500).json({ error: 'Internal server error during equipment operation' });
+        return sendError(res, 500, 'Internal server error during equipment operation' });
     }
 });
 
@@ -196,7 +195,7 @@ router.post('/sell', requireAuth, async (req, res) => {
 
         // Validate input
         if (!inventory_id) {
-            return res.status(400).json({ error: 'Inventory ID is required' });
+            return sendError(res, 400, 'Inventory ID is required' });
         }
 
         // Get player's current gold before selling
@@ -207,7 +206,7 @@ router.post('/sell', requireAuth, async (req, res) => {
             .single();
 
         if (playerError || !player) {
-            return res.status(500).json({ error: 'Failed to load player data' });
+            return sendError(res, 500, 'Failed to load player data' });
         }
 
         // Use database function for atomic sell operation
@@ -218,18 +217,14 @@ router.post('/sell', requireAuth, async (req, res) => {
 
         if (error) {
             console.error('Sell error:', error);
-            return res.status(500).json({ error: 'Sell failed due to server error' });
+            return sendError(res, 500, 'Sell failed due to server error' });
         }
 
         if (!data || !data.success) {
-            return res.status(400).json({ 
-                error: data?.error || 'Failed to sell item',
-                details: data
-            });
+            return sendError(res, 400, data?.error || 'Failed to sell item', data);
         }
 
-        res.json({
-            success: true,
+        return sendSuccess(res, {
             gold_earned: data.gold_earned,
             item_name: data.item_name,
             original_cost: data.original_cost,
@@ -239,7 +234,7 @@ router.post('/sell', requireAuth, async (req, res) => {
 
     } catch (error) {
         console.error('Error during sell operation:', error);
-        res.status(500).json({ error: 'Internal server error during sell operation' });
+        return sendError(res, 500, 'Internal server error during sell operation' });
     }
 });
 

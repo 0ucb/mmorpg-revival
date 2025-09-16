@@ -1,16 +1,8 @@
 import express from 'express';
 import { supabaseAdmin } from '../config/supabase.js';
+import { sendError, sendSuccess } from '../utils/errorHandler.js';
 
 const router = express.Router();
-
-// Standardized error response
-const sendError = (res, status, message, details = null) => {
-    const response = { error: message };
-    if (details && process.env.NODE_ENV === 'development') {
-        response.details = details;
-    }
-    return res.status(status).json(response);
-};
 
 // Set httpOnly session cookie
 const setSessionCookie = (res, session) => {
